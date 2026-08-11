@@ -6,7 +6,7 @@ import Intro from "@/components/Intro";
 import PhotoTools from "@/components/PhotoTools";
 import ScaledCard from "@/components/ScaledCard";
 import { type PassData } from "@/components/PassCard";
-import { CalendarIcon, HHLogo, HouseMark, PersonIcon, WaveMark } from "@/components/marks";
+import { CalendarIcon, HouseMark, PersonIcon, WaveMark } from "@/components/marks";
 import { intake, type Photo } from "@/lib/photo";
 import { download, slugify, toPng } from "@/lib/render";
 import { generatePassId } from "@/lib/builderClass";
@@ -151,93 +151,54 @@ export default function Home() {
       <section className="relative flex min-h-svh flex-col justify-between overflow-hidden">
         <HeroBackdrop />
 
-        {/* Header Navbar */}
-        <nav className="relative z-10 flex items-center justify-between px-6 py-4 md:px-12 border-b border-[#c88724]/20">
-          {/* Left: HouseMark + divider + HH mark */}
-          <div className="flex items-center gap-3">
-            <HouseMark className="h-7 w-7 text-pink" />
-            <div className="h-4 w-[1px] bg-cream/30" />
-            <HHLogo className="h-4 w-auto text-pink" />
+        <header className="relative z-10 flex items-start justify-between px-5 pt-4 sm:px-10 sm:pt-7 lg:px-16">
+          <div className="flex items-center gap-4 md:hidden">
+            <HouseMark className="h-14 w-16 sm:h-[78px] sm:w-[88px]" />
+            <span className="h-10 w-px bg-orange/70 sm:h-14" />
           </div>
-
-          {/* Center: Navigation Links */}
-          <div className="hidden md:flex items-center gap-10 text-xs font-semibold tracking-[0.2em] text-cream/90 uppercase">
-            <span className="cursor-default hover:text-cream transition">ABOUT</span>
-            <span className="cursor-default hover:text-cream transition">SCHEDULE</span>
-            <span className="cursor-default hover:text-cream transition">BUILDERS</span>
-          </div>
-
-          {/* Right: FAQ + Profile Icon */}
-          <div className="flex items-center gap-6">
-            <span className="text-xs font-semibold tracking-[0.2em] text-cream/90 uppercase cursor-default">
-              FAQ
-            </span>
-            <div className="h-8 w-8 rounded-full border border-cream/40 flex items-center justify-center text-cream/80 cursor-default">
-              <PersonIcon className="w-4 h-4 text-cream" />
-            </div>
-          </div>
-        </nav>
+          <a
+            href="https://hhgoa.com/#check-hype"
+            className="group ml-auto flex items-center gap-3 rounded-full border-2 border-orange bg-[#70241f]/95 px-4 py-2 text-sm font-semibold text-cream shadow-[inset_0_-3px_0_#e8336e,0_0_0_3px_rgba(255,138,36,0.2)] transition hover:scale-[1.03] sm:px-7 sm:py-3 sm:text-xl"
+          >
+            CHECK HYPE <span className="text-2xl leading-none transition-transform group-hover:translate-x-1">→</span>
+          </a>
+        </header>
 
         {/* Central Hero Content */}
-        <div className="relative z-10 flex flex-1 flex-col items-center justify-center px-4 py-8 text-center">
-          {/* Arch Badge */}
-          <div className="rise mb-1 flex flex-col items-center">
-            {/* Curved Text Arc */}
-            <svg className="w-56 h-9 overflow-visible" viewBox="0 0 220 38">
-              <path id="curve" d="M 10 30 Q 110 8 210 32" fill="none" />
-              <text fill="#FF3F68" fontSize="13" fontWeight="700" letterSpacing="4.5">
-                <textPath href="#curve" startOffset="50%" textAnchor="middle">
-                  GOA • INDIA • 2026
-                </textPath>
-              </text>
-            </svg>
-            {/* Sun Rays Illustration */}
-            <svg className="w-10 h-5 text-gold -mt-1" viewBox="0 0 40 20" fill="none" stroke="currentColor">
-              <path d="M 6 18 A 14 14 0 0 1 34 18" strokeWidth="2.2" strokeLinecap="round" />
-              <line x1="20" y1="2" x2="20" y2="0" strokeWidth="2.2" strokeLinecap="round" />
-              <line x1="10" y1="6" x2="7" y2="3" strokeWidth="2.2" strokeLinecap="round" />
-              <line x1="30" y1="6" x2="33" y2="3" strokeWidth="2.2" strokeLinecap="round" />
-              <line x1="5" y1="13" x2="2" y2="12" strokeWidth="2.2" strokeLinecap="round" />
-              <line x1="35" y1="13" x2="38" y2="12" strokeWidth="2.2" strokeLinecap="round" />
+        <div className="relative z-10 flex flex-1 flex-col items-center justify-center px-4 pb-7 pt-2 text-center sm:pb-10">
+          <div className="absolute left-[16%] top-[18%] hidden text-left md:block">
+            <span className="text-[2rem] font-black leading-none text-orange">2:47<small className="ml-1 text-lg">pm</small><b className="block text-xl text-cream">STUDIO</b></span>
+          </div>
+
+          <div className="rise mb-3 flex flex-col items-center sm:mb-5">
+            <p className="text-[11px] font-bold tracking-[0.3em] text-pink sm:text-base sm:tracking-[0.42em]">GOA • INDIA • 2026</p>
+            <svg className="mt-2 h-6 w-16 sm:h-8 sm:w-20" viewBox="0 0 80 32" fill="none" aria-hidden>
+              <path d="M22 28a18 18 0 0 1 36 0M40 8V1M26 12l-5-5M54 12l5-5M19 21l-7-2M61 21l7-2" stroke="#ff8a24" strokeWidth="2.4" strokeLinecap="round" />
             </svg>
           </div>
 
-          {/* Main Title Wordmark */}
-          <h1
-            className="display rise text-cream uppercase text-center"
-            style={{
-              fontSize: "clamp(3.8rem, 11vw, 8.8rem)",
-              letterSpacing: "0.01em",
-              lineHeight: 0.88,
-              animationDelay: "60ms",
-            }}
-          >
-            HACKER HOUSE
-          </h1>
+          <div className="rise hacker-house-artifact" style={{ animationDelay: "60ms" }}>
+            {/* Exact supplied transparent Hacker House Goa wordmark. */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/hacker-house-goa.png" alt="Hacker House Goa" />
+          </div>
 
-          {/* Subtitle Slogan */}
-          <p
-            className="rise mt-3 text-sm sm:text-lg font-bold tracking-[0.28em] text-cream uppercase"
-            style={{ animationDelay: "120ms" }}
-          >
-            BUILD. <span className="text-pink">•</span> SHIP. <span className="text-pink">•</span> SUNSET.
+          <p className="rise mt-3 text-xs font-bold tracking-[0.34em] text-cream sm:mt-5 sm:text-2xl sm:tracking-[0.4em]" style={{ animationDelay: "120ms" }}>
+            BUILD <span className="text-pink">•</span> SHIP <span className="text-pink">•</span> ASCEND
           </p>
 
-          {/* GET YOUR BUILDER PASS Button */}
-          <div className="rise mt-6 md:mt-8" style={{ animationDelay: "180ms" }}>
-            <button
-              onClick={scrollToBuilder}
-              className="group relative inline-flex items-center gap-3 rounded-full bg-pink px-8 py-3.5 sm:px-10 sm:py-4 text-sm sm:text-base font-extrabold tracking-wider text-cream border-b-4 border-[#C82A50] shadow-lg transition-transform hover:scale-[1.03] active:scale-[0.98]"
-            >
-              <span>GET YOUR BUILDER PASS</span>
-              <span className="transition-transform group-hover:translate-x-1">→</span>
-            </button>
-          </div>
+          <button
+            onClick={scrollToBuilder}
+            className="rise group mt-6 inline-flex items-center gap-5 rounded-full border-2 border-pink bg-pink px-6 py-3 text-sm font-extrabold text-cream shadow-[inset_0_-4px_0_#b61540,0_3px_0_#ff8a24] transition hover:scale-[1.03] active:scale-[0.98] sm:mt-8 sm:px-8 sm:py-4 sm:text-xl"
+            style={{ animationDelay: "180ms" }}
+          >
+            GET YOUR BUILDER PASS <span className="text-2xl leading-none transition-transform group-hover:translate-x-1">→</span>
+          </button>
         </div>
 
         {/* Bottom Hero Info Strip */}
-        <div className="relative z-10 px-4 pb-6 flex flex-col items-center gap-3">
-          <div className="rise flex flex-wrap items-center justify-center gap-4 sm:gap-8 rounded-2xl md:rounded-full border border-[#c88724]/40 bg-[#001D1F]/90 px-6 py-3 md:px-10 md:py-3.5 backdrop-blur-md text-xs sm:text-sm font-bold tracking-wider text-cream">
+        <div className="relative z-10 flex flex-col items-center gap-3 px-4 pb-6 md:pb-16">
+          <div className="rise flex flex-wrap items-center justify-center gap-3 rounded-2xl border border-orange/70 bg-[#001d1f]/90 px-4 py-3 text-[11px] font-bold tracking-wide text-cream backdrop-blur-md sm:gap-8 sm:rounded-full sm:px-10 sm:py-3.5 sm:text-sm">
             <div className="flex items-center gap-2.5">
               <CalendarIcon className="w-4 h-4 sm:w-5 sm:h-5 text-pink" />
               <div className="flex flex-col sm:flex-row sm:gap-1 text-left sm:text-center leading-tight">
@@ -245,7 +206,7 @@ export default function Home() {
                 <span>OCT 2026</span>
               </div>
             </div>
-            <span className="hidden sm:inline text-[#c88724]/40 font-light">|</span>
+            <span className="text-orange/60 font-light">|</span>
             <div className="flex items-center gap-2.5">
               <svg className="w-4 h-4 sm:w-5 sm:h-5 text-pink" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
@@ -256,22 +217,20 @@ export default function Home() {
                 <span>INDIA</span>
               </div>
             </div>
-            <span className="hidden sm:inline text-[#c88724]/40 font-light">|</span>
+            <span className="text-orange/60 font-light">|</span>
             <div className="flex items-center gap-2.5">
-              <svg className="w-4 h-4 sm:w-5 sm:h-5 text-pink" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-              </svg>
+              <PersonIcon className="w-4 h-4 sm:w-5 sm:h-5" />
               <div className="flex flex-col sm:flex-row sm:gap-1 text-left sm:text-center leading-tight">
-                <span>SUN, SAND,</span>
-                <span>SHIP, REPEAT</span>
+                <span>FOUNDER</span>
+                <span>IN MAKING</span>
               </div>
             </div>
           </div>
 
-          <div className="flex items-center gap-3 text-[11px] font-bold tracking-[0.28em] text-[#C88724] uppercase">
-            <WaveMark className="h-2 w-8 text-pink opacity-80" />
+          <div className="flex items-center justify-center gap-3 whitespace-nowrap text-center text-[9px] font-bold tracking-[0.16em] text-[#C88724] uppercase md:hidden">
+            <WaveMark className="hidden h-2 w-8 text-pink opacity-80 sm:block" />
             <span>BUILT BY BUILDERS, FOR BUILDERS</span>
-            <WaveMark className="h-2 w-8 text-pink opacity-80" />
+            <WaveMark className="hidden h-2 w-8 text-pink opacity-80 sm:block" />
           </div>
         </div>
       </section>

@@ -35,6 +35,23 @@ body {
   line-height: 0.88;
 }
 
+.hacker-house-artifact {
+  position: relative;
+  width: clamp(19rem, 43vw, 48rem);
+  aspect-ratio: 2.5 / 1;
+  overflow: hidden;
+  margin: 0;
+}
+
+.hacker-house-artifact img {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 100%;
+  height: auto;
+  transform: translateY(-50%);
+}
+
 
 /* Reveal used when the card lands */
 @keyframes card-in {

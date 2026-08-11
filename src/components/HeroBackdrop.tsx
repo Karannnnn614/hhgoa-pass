@@ -4,15 +4,15 @@ export default function HeroBackdrop() {
       <picture className="absolute inset-0 w-full h-full">
         <source
           media="(min-width: 768px)"
-          srcSet="/hero-backdrop.webp"
-          type="image/webp"
+          srcSet="/Landing%20Page%20with%20only%20bg%20final.png"
+          type="image/png"
         />
         <img
           src="/hero-backdrop-mobile.webp"
           alt=""
           aria-hidden
           fetchPriority="high"
-          className="w-full h-full object-cover object-center"
+          className="h-full w-full object-cover object-center md:object-fill"
         />
       </picture>
     </div>
