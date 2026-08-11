@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Archivo, Archivo_Black } from "next/font/google";
+import { siteUrl } from "@/lib/siteUrl";
 import "./globals.css";
 
 const sans = Archivo({
@@ -16,9 +17,7 @@ const display = Archivo_Black({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(
-    process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",
-  ),
+  metadataBase: new URL(siteUrl()),
   title: "Builder Pass — Hacker House Goa 2026",
   description:
     "Mint your Hacker House Goa 2026 Builder Pass. Upload a photo, get a shareable badge in seconds. Build. Ship. Sunset.",

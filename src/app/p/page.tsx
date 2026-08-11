@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { builderClass } from "@/lib/builderClass";
+import { siteUrl } from "@/lib/siteUrl";
 
 type SP = Promise<{ [k: string]: string | string[] | undefined }>;
 
@@ -18,7 +19,9 @@ export async function generateMetadata({
   const h = one(sp.h);
   const title = builderClass(s, n);
 
-  const og = `/api/og?${new URLSearchParams({ n, s, h })}`;
+  // Absolute: X/Slack scrapers need a fully-qualified image URL, and this
+  // page is the one they actually fetch.
+  const og = `${siteUrl()}/api/og?${new URLSearchParams({ n, s, h })}`;
 
   return {
     title: `${n} — Builder Pass · HH Goa 2026`,
