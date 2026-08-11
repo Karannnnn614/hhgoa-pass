@@ -29,9 +29,9 @@ body {
 /* Display type: condensed, heavy, all-caps — the landing headline voice */
 .display {
   font-family: var(--font-display);
-  font-weight: 400;
+  font-weight: 800;
   text-transform: uppercase;
-  letter-spacing: 0.01em;
+  letter-spacing: -0.02em;
   line-height: 0.88;
 }
 
@@ -51,7 +51,6 @@ body {
   height: auto;
   transform: translateY(-50%);
 }
-
 
 /* Reveal used when the card lands */
 @keyframes card-in {

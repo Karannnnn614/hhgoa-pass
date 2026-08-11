@@ -1,42 +1,124 @@
 "use client";
 
-import { forwardRef } from "react";
+import { forwardRef, useEffect, useState } from "react";
 import PhotoSlot, { type Transform } from "./PhotoSlot";
 import type { Photo } from "@/lib/photo";
+import { builderId } from "@/lib/builderClass";
 import plate from "@/lib/plate.json";
 
 export type PassData = {
-  firstName: string;
-  lastName: string;
-  profileTitle: string;
-  teamName: string;
-  xUsername: string;
-  passId: string;
+  name?: string;
+  title?: string;
+  team?: string;
+  handle?: string;
+  stack?: string;
   photo: Photo | null;
   transform: Transform;
+
+  // Compatibility fields for vaibhav form / page inputs
+  firstName?: string;
+  lastName?: string;
+  profileTitle?: string;
+  teamName?: string;
+  xUsername?: string;
+  passId?: string;
   qr?: string;
 };
 
-export const CARD_W = plate.W; // 1024
-export const CARD_H = plate.H; // 1536
+/* The card IS the frame artwork (public/plate.png) with the placeholder text
+   removed. Everything below is positioned in the plate's own pixel space, so
+   text lands exactly where the design intends. */
+export const CARD_W = plate.W;
+export const CARD_H = plate.H;
 
-function PlaceholderGraphic() {
+/* Anchors measured off a gridded render of the frame (1000x1632). */
+const PAD_L = 78;
+const NAME_BOTTOM = 1268; // name/title block sits just above the bottom box
+const ROW_X = 170; // label column, right of the pink icons
+const TEAM_ROW_CY = 1322;
+const HANDLE_ROW_CY = 1418;
+const ID_RIGHT = 96; // builder id, right side of the bottom box
+
+/* Canvas ctx.font cannot resolve CSS vars, so name the face literally.
+   next/font also registers a metric-matched fallback. */
+const DISPLAY_FONT = '"Archivo Black", "Archivo Black Fallback", sans-serif';
+const NAME_MAX_SIZE = 86;
+const NAME_MIN_SIZE = 34;
+
+function splitName(full: string): [string, string | null] {
+  const parts = full.trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return ["YOUR", "NAME"];
+  if (parts.length === 1) return [parts[0], null];
+  return [parts[0], parts.slice(1).join(" ")];
+}
+
+/** Measures the widest line and returns the largest size that fits. */
+function measureFit(key: string, maxWidth: number, max: number): number {
+  if (typeof document === "undefined") return max;
+  const ctx = document.createElement("canvas").getContext("2d");
+  if (!ctx) return max;
+  const parts = key.split("|").filter(Boolean);
+  if (!parts.length) return max;
+
+  for (let s = max; s >= NAME_MIN_SIZE; s--) {
+    ctx.font = `400 ${s}px ${DISPLAY_FONT}`;
+    if (Math.max(...parts.map((l) => ctx.measureText(l).width)) <= maxWidth) {
+      return s;
+    }
+  }
+  return NAME_MIN_SIZE;
+}
+
+function useFittedSize(lines: string[], maxWidth: number, max: number): number {
+  const key = lines.join("|");
+  /* Computed during the initial render, not in an effect: an effect would
+     paint one oversized frame first, which the rasteriser can capture. */
+  const [size, setSize] = useState(() => measureFit(key, maxWidth, max));
+
+  useEffect(() => {
+    const apply = () => setSize(measureFit(key, maxWidth, max));
+    apply();
+    document.fonts?.ready.then(apply).catch(() => {});
+  }, [key, maxWidth, max]);
+
+  return size;
+}
+
+/** One row in the bottom box, centred on its printed icon. */
+function BoxRow({
+  cy,
+  label,
+  value,
+}: Readonly<{ cy: number; label: string; value: string }>) {
   return (
-    <svg viewBox="0 0 400 400" className="h-full w-full">
-      <rect width="400" height="400" fill="#E3F5FF" />
-      <path
-        d="M 160 140 C 160 120, 185 105, 210 105 C 230 105, 245 115, 250 130 C 260 128, 275 135, 278 148 C 282 160, 272 172, 255 172 L 150 172 C 135 172, 125 160, 132 148 C 138 138, 148 138, 160 140 Z"
-        fill="#FFFFFF"
-      />
-      <path
-        d="M -20 280 Q 120 200 240 270 Q 320 320 420 240 L 420 420 L -20 420 Z"
-        fill="#8AAE00"
-      />
-      <path
-        d="M -20 330 Q 160 260 420 300 L 420 420 L -20 420 Z"
-        fill="#729800"
-      />
-    </svg>
+    <div
+      className="pointer-events-none absolute text-left"
+      style={{ left: ROW_X, top: cy, transform: "translateY(-50%)" }}
+    >
+      <div
+        style={{
+          fontSize: 23,
+          letterSpacing: "0.14em",
+          color: "#F2EDE3",
+          opacity: 0.62,
+          lineHeight: 1.1,
+        }}
+      >
+        {label}
+      </div>
+      <div
+        className="font-bold"
+        style={{
+          fontSize: 34,
+          color: "#F2EDE3",
+          marginTop: 6,
+          lineHeight: 1.1,
+          whiteSpace: "nowrap",
+        }}
+      >
+        {value}
+      </div>
+    </div>
   );
 }
 
@@ -44,42 +126,49 @@ const PassCard = forwardRef<
   HTMLDivElement,
   { data: PassData; onTransform?: (t: Transform) => void }
 >(function PassCard({ data, onTransform }, ref) {
-  const firstName = data.firstName.trim().toUpperCase();
-  const lastName = data.lastName.trim().toUpperCase();
-  const profileTitle = data.profileTitle.trim();
-  const teamName = data.teamName.trim().toUpperCase();
+  const rawName = data.name || [data.firstName, data.lastName].filter(Boolean).join(" ");
+  const raw = rawName.trim() || "Your Name";
+  const [line1, line2] = splitName(raw);
+  const handle = (data.handle || data.xUsername || "").trim().replace(/^@/, "");
+  const team = (data.team || data.teamName || "").trim();
+  const stack = (data.stack || "").trim();
+  // "Builder" is the default title, per the design.
+  const title = (data.title || data.profileTitle || "").trim() || "Builder";
+  const id = data.passId || builderId(raw, handle);
 
-  const cleanHandle = data.xUsername.trim().replace(/^@/, "");
-  const xUsername = cleanHandle ? `@${cleanHandle.toUpperCase()}` : "";
-  const passId = data.passId || "HHG26-BLD-1047";
+  const nameSize = useFittedSize(
+    [line1.toUpperCase(), line2?.toUpperCase() ?? ""],
+    CARD_W - PAD_L - 90,
+    NAME_MAX_SIZE,
+  );
 
-  const titleParts = profileTitle
-    ? profileTitle
-      .split(/[•·|-]/)
-      .map((s) => s.trim())
-      .filter(Boolean)
-    : [];
+  // Title line: title, then stack verbatim if given (no separator parsing —
+  // whatever the user typed is exactly what prints).
+  const subtitle = [title, stack].filter(Boolean).join("  ·  ");
+  const subSize = subtitle.length > 40 ? 26 : 31;
 
   return (
     <div
       ref={ref}
       data-card
-      style={{ width: CARD_W, height: CARD_H, backgroundColor: "#00161A" }}
-      className="relative overflow-hidden font-sans select-none"
+      style={{ width: CARD_W, height: CARD_H }}
+      // text-left is explicit: the card must not inherit the page's
+      // text-center, or every field drifts out of its designed slot.
+      className="relative overflow-hidden text-left font-sans"
     >
-      {/* 1. Dynamic Profile Photo (Layered UNDER the base plate) */}
+      {/* the user's photo, behind the plate so the frame's green ring and
+          artwork overlap it exactly as designed */}
       <div
         className="absolute overflow-hidden rounded-full"
         style={{
-          left: 160.5,
-          top: 399,
-          width: 382,
-          height: 382,
-          backgroundColor: "#E3F5FF",
-          zIndex: 1,
+          left: plate.photo.cx - plate.photo.r,
+          top: plate.photo.cy - plate.photo.r,
+          width: plate.photo.r * 2,
+          height: plate.photo.r * 2,
+          background: "#0A1F1C",
         }}
       >
-        {data.photo ? (
+        {data.photo && (
           <PhotoSlot
             photo={data.photo}
             transform={data.transform}
@@ -87,178 +176,98 @@ const PassCard = forwardRef<
             interactive={!!onTransform}
             className="h-full w-full"
           />
-        ) : (
-          <PlaceholderGraphic />
         )}
       </div>
 
-      {/* 2. Base Artwork Plate Overlay */}
+      {/* the frame artwork */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
-        src="/base_plate.png"
-        alt="Builder Pass Background"
+        src="/plate.png"
+        alt=""
+        aria-hidden
         draggable={false}
-        className="pointer-events-none absolute inset-0 h-full w-full object-cover"
-        style={{ zIndex: 2 }}
+        className="pointer-events-none absolute inset-0"
+        style={{ width: CARD_W, height: CARD_H }}
       />
 
-      {/* 3. Name Block */}
-      <div
-        className="pointer-events-none absolute flex flex-col justify-start"
-        style={{
-          left: 151,
-          top: 940,
-          width: 520,
-          zIndex: 10,
-        }}
-      >
-        <h1
-          style={{
-            fontFamily: 'var(--font-sans), ui-sans-serif, system-ui, sans-serif',
-            fontSize: 58,
-            fontWeight: 900,
-            lineHeight: 1.05,
-            letterSpacing: "0.01em",
-            color: "#F8E7B9",
-            textTransform: "uppercase",
-            wordBreak: "break-word",
-          }}
-        >
-          {firstName || "YOUR"}
-          <br />
-          {lastName || "NAME"}
-        </h1>
-      </div>
-
-      {/* 4. Profile Titles / Roles */}
-      <div
-        className="pointer-events-none absolute flex items-center"
-        style={{
-          left: 151,
-          top: 1082,
-          width: 600,
-          zIndex: 10,
-        }}
-      >
-        {titleParts.length > 0 && (
-          <p
-            className="flex flex-wrap items-center font-bold"
-            style={{
-              fontFamily: 'var(--font-sans), ui-sans-serif, system-ui, sans-serif',
-              fontSize: 22,
-              color: "#F8E7B9",
-              gap: 10,
-            }}
-          >
-            {titleParts.map((part, i) => (
-              <span key={i} className="flex items-center" style={{ gap: 10 }}>
-                {i > 0 && <span style={{ color: "#F8E7B9" }}>-</span>}
-                <span>{part}</span>
-              </span>
-            ))}
-          </p>
-        )}
-      </div>
-
-      {/* 5. Team Name */}
+      {/* ---- name + title, in the open area above the box ---- */}
       <div
         className="pointer-events-none absolute"
-        style={{
-          left: 238,
-          top: 1184,
-          width: 380,
-          zIndex: 10,
-        }}
+        style={{ left: PAD_L, right: 90, bottom: CARD_H - NAME_BOTTOM }}
       >
-        {teamName && (
-          <span
-            className="block font-bold tracking-wide"
-            style={{
-              fontFamily: 'var(--font-sans), ui-sans-serif, system-ui, sans-serif',
-              fontSize: 22,
-              color: "#F8E7B9",
-              textTransform: "uppercase",
-              lineHeight: 1.1,
-              whiteSpace: "nowrap",
-              overflow: "hidden",
-            }}
-          >
-            {teamName}
-          </span>
-        )}
-      </div>
-
-      {/* 6. X Username */}
-      <div
-        className="pointer-events-none absolute"
-        style={{
-          left: 238,
-          top: 1272,
-          width: 380,
-          zIndex: 10,
-        }}
-      >
-        {xUsername && (
-          <span
-            className="block font-bold tracking-wide"
-            style={{
-              fontFamily: 'var(--font-sans), ui-sans-serif, system-ui, sans-serif',
-              fontSize: 22,
-              color: "#F8E7B9",
-              lineHeight: 1.1,
-              whiteSpace: "nowrap",
-              overflow: "hidden",
-            }}
-          >
-            {xUsername}
-          </span>
-        )}
-      </div>
-
-      {/* 7. QR Code Area */}
-      {data.qr && (
         <div
-          className="pointer-events-none absolute overflow-hidden rounded-md"
+          className="display"
           style={{
-            left: 672,
-            top: 1148,
-            width: 136,
-            height: 136,
-            zIndex: 10,
+            fontSize: nameSize,
+            lineHeight: 1.0,
+            color: "#F2E2BC",
+            letterSpacing: "-0.01em",
           }}
         >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={data.qr}
-            alt="Pass QR Code"
-            className="h-full w-full object-contain"
-          />
+          {line1.toUpperCase()}
+          {line2 && (
+            <>
+              <br />
+              {line2.toUpperCase()}
+            </>
+          )}
         </div>
-      )}
 
-      {/* 8. Pass ID */}
+        <div
+          style={{
+            marginTop: 18,
+            fontSize: subSize,
+            color: "#F2762F",
+            fontWeight: 700,
+            letterSpacing: "0.02em",
+          }}
+        >
+          {subtitle}
+        </div>
+      </div>
+
+      {/* ---- bottom box rows ---- */}
+      <BoxRow cy={TEAM_ROW_CY} label="TEAM NAME" value={team || "—"} />
+      <BoxRow
+        cy={HANDLE_ROW_CY}
+        label="X USERNAME"
+        value={handle ? `@${handle}` : "—"}
+      />
+
+      {/* ---- builder id, right side of the bottom box ----
+             The footer band is already full (HH · dates · tagline), so the
+             credential lives in the box with the other identity fields. */}
       <div
-        className="pointer-events-none absolute text-center"
+        className="pointer-events-none absolute text-right"
         style={{
-          left: 635,
-          top: 1302,
-          width: 210,
-          zIndex: 10,
+          right: ID_RIGHT,
+          top: TEAM_ROW_CY,
+          transform: "translateY(-50%)",
         }}
       >
-        <span
-          className="block font-mono font-bold"
+        <div
           style={{
-            fontFamily: 'var(--font-mono), "Space Mono", "Courier New", monospace',
-            fontSize: 18,
-            letterSpacing: "0.06em",
-            color: "#FF914D",
-            lineHeight: 1,
-            textTransform: "uppercase",
+            fontSize: 23,
+            letterSpacing: "0.14em",
+            color: "#F2EDE3",
+            opacity: 0.62,
+            lineHeight: 1.1,
           }}
         >
-          {passId}
-        </span>
+          BUILDER ID
+        </div>
+        <div
+          className="font-bold"
+          style={{
+            fontSize: 32,
+            color: "#F2762F",
+            marginTop: 6,
+            lineHeight: 1.1,
+            whiteSpace: "nowrap",
+          }}
+        >
+          {id}
+        </div>
       </div>
     </div>
   );
