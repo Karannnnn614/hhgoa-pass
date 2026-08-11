@@ -65,8 +65,11 @@ hole, and writes `src/lib/plate.json` with the geometry the card reads.
 - **Credential rows are anchored to the plate's icons** (person y=1332,
   calendar y=1431) and centred with `translateY(-50%)`, so the label/value
   pairs cannot drift into each other at any font size.
-- **Builder ID is deterministic** (FNV-1a hash) — the same name + stack always
-  produces the same badge.
+- **Builder ID** is `HHG26-<initials>-<4 digits>`, e.g. `HHG26-BPS-3731` for
+  Bhavya Pratap Singh. The initials come from the name (up to 3, falling back
+  to `BLD` for single-word names); the digits are an FNV-1a hash of name + X
+  handle. It's deterministic on purpose: the downloaded PNG, the `/p`
+  permalink and its OG preview can never show different IDs for one person.
 - **The QR is real.** It encodes that pass's `/p?...` permalink; verified by
   decoding it back out of the exported PNG.
 - The landing artwork is a full page comp (it carries its own nav and

@@ -37,19 +37,35 @@ const TITLES = [
   "Trance Tempo Typist",
 ];
 
-const RANKS = ["I", "II", "III", "IV", "V"];
-
 export function builderClass(stack: string, name = ""): string {
   if (!stack.trim()) return "Builder";
   return TITLES[hash(stack + "|" + name) % TITLES.length];
 }
 
-/** Badge serial, also deterministic — reads like a real credential. */
-export function builderId(name: string, stack: string): string {
-  const h = hash(name + "::" + stack);
+/** Up to 3 initials from the name; "BLD" when there's nothing usable. */
+function initials(name: string): string {
+  const letters = name
+    .trim()
+    .split(/\s+/)
+    .map((w) => w.replace(/[^\p{L}]/gu, "")[0])
+    .filter(Boolean)
+    .slice(0, 3)
+    .join("")
+    .toUpperCase();
+  return letters.length >= 2 ? letters : "BLD";
+}
+
+/**
+ * Badge serial: HHG26-<initials>-<4 digits>.
+ *
+ * Deterministic on (name, X handle) so the same person always gets the same
+ * ID — the downloaded PNG, the /p permalink and its OG preview can never
+ * disagree. The digits look arbitrary but are a hash, not a random draw.
+ */
+export function builderId(name: string, handle = ""): string {
+  const h = hash(name + "::" + handle.trim().toLowerCase().replace(/^@/, ""));
   const n = (h % 9000) + 1000;
-  const rank = RANKS[h % RANKS.length];
-  return `HHG26-${rank}-${n}`;
+  return `HHG26-${initials(name)}-${n}`;
 }
 
 if (process.env.NODE_ENV !== "production" && typeof window === "undefined") {
@@ -59,7 +75,23 @@ if (process.env.NODE_ENV !== "production" && typeof window === "undefined") {
     "builderClass must be case/space insensitive",
   );
   console.assert(
-    builderId("Ada", "rust") === builderId("Ada", "rust"),
-    "builderId must be stable",
+    builderId("Ada Lovelace", "@ada") === builderId("Ada Lovelace", "ada"),
+    "builderId must ignore a leading @ on the handle",
+  );
+  console.assert(
+    builderId("Bhavya Pratap Singh", "x").startsWith("HHG26-BPS-"),
+    "builderId must use up to 3 initials",
+  );
+  console.assert(
+    builderId("Cher", "x").startsWith("HHG26-BLD-"),
+    "single-initial names must fall back to BLD",
+  );
+  console.assert(
+    builderId("Ada", "one") !== builderId("Ada", "two"),
+    "builderId must vary with the handle",
+  );
+  console.assert(
+    /^HHG26-[A-Z]{2,3}-\d{4}$/.test(builderId("Karan Mundre", "@km")),
+    "builderId must match HHG26-XX-9999",
   );
 }

@@ -143,7 +143,7 @@ const PassCard = forwardRef<
   const [line1, line2] = splitName(raw);
   const stack = data.stack.trim() || "Builder · Developer";
   const handle = data.handle.trim().replace(/^@/, "");
-  const id = builderId(raw, stack);
+  const id = builderId(raw, handle);
 
   const roleParts = stack
     .split(/[·•,|]/)

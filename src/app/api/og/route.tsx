@@ -15,7 +15,7 @@ export async function GET(req: Request) {
   const stack = (searchParams.get("s") || "Full-stack").slice(0, 28);
   const handle = (searchParams.get("h") || "").slice(0, 20).replace(/^@/, "");
   const title = builderClass(stack, name);
-  const id = builderId(name, stack);
+  const id = builderId(name, handle);
   const initials =
     name
       .split(/\s+/)
