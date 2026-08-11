@@ -56,13 +56,15 @@ const card = await sharp(SRC)
   .png()
   .toBuffer();
 
-// --- geometry, measured off a gridded render of the plate at 1000x1625 ---
-const S = H / 1625;
+// --- geometry, measured off a gridded render of the frame at 1000x1632 ---
+const S = H / 1632;
 const sx = W / 1000;
+// Photo circle sits inside the frame's green ring; r is the inner radius so
+// the ring itself stays visible on top of the user's photo.
 const photo = {
-  cx: Math.round(305 * sx),
+  cx: Math.round(303 * sx),
   cy: Math.round(620 * S),
-  r: Math.round(228 * sx),
+  r: Math.round(238 * sx),
 };
 
 // background colour, sampled from a clear patch
@@ -71,18 +73,19 @@ const at2 = (x, y) => {
   const i = (y * c2.info.width + x) * c2.info.channels;
   return [c2.data[i], c2.data[i + 1], c2.data[i + 2]];
 };
-const bg = at2(Math.round(W * 0.06), Math.round(H * 0.7));
+// sampled from the empty band just above the bottom box, which is flat card
+const bg = at2(Math.round(W * 0.35), Math.round(H * 0.76));
 const FILL = `rgb(${bg[0]},${bg[1]},${bg[2]})`;
 
 const rect = (x1, y1, x2, y2) =>
   `<rect x="${x1 * sx}" y="${y1 * S}" width="${(x2 - x1) * sx}" height="${(y2 - y1) * S}" fill="${FILL}"/>`;
 
-// sample content to erase (coords in the 1000x1625 gridded space)
+/* Sample content to erase (coords in the 1000x1632 gridded space).
+   This frame's only placeholders are the two label strings in the bottom
+   box — the pink icons beside them are real art and must survive. */
 const erase = [
-  rect(45, 970, 680, 1245), // name + role line
-  rect(150, 1300, 660, 1375), // builder id label + value
-  rect(150, 1395, 660, 1470), // event dates label + value
-  rect(630, 1265, 910, 1500), // sample QR
+  rect(165, 1295, 900, 1355), // "TEAM NAME" placeholder text
+  rect(165, 1390, 900, 1450), // "X USERNAME" placeholder text
 ].join("");
 
 const plate = await sharp(card)
