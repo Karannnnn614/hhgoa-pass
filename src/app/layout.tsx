@@ -1,15 +1,15 @@
 import type { Metadata } from "next";
-import { Archivo, Archivo_Black } from "next/font/google";
+import { Anton, DM_Sans } from "next/font/google";
 import { siteUrl } from "@/lib/siteUrl";
 import "./globals.css";
 
-const sans = Archivo({
+const sans = DM_Sans({
   variable: "--font-sans",
   subsets: ["latin"],
   display: "swap",
 });
 
-const display = Archivo_Black({
+const display = Anton({
   variable: "--font-display",
   weight: "400",
   subsets: ["latin"],
@@ -41,3 +41,4 @@ export default function RootLayout({
     </html>
   );
 }
+

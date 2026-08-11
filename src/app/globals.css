@@ -1,13 +1,14 @@
 @import "tailwindcss";
 
 @theme {
-  /* HH Goa 2026 — locked palette */
-  --color-ink: #071613;
-  --color-deep: #0e2620;
-  --color-deep-2: #123329;
-  --color-cream: #f5e9cf;
-  --color-pink: #e8336e;
-  --color-orange: #f5a03c;
+  /* HH Goa 2026 — locked palette matching reference image */
+  --color-ink: #001c1e;
+  --color-deep: #002426;
+  --color-deep-2: #002a2c;
+  --color-cream: #f5e8c8;
+  --color-pink: #ff3f68;
+  --color-orange: #ff8a24;
+  --color-gold: #c88724;
   --color-sand: #cbbb99;
 
   --font-display: var(--font-display), ui-sans-serif, system-ui, sans-serif;
@@ -28,11 +29,12 @@ body {
 /* Display type: condensed, heavy, all-caps — the landing headline voice */
 .display {
   font-family: var(--font-display);
-  font-weight: 800;
+  font-weight: 400;
   text-transform: uppercase;
-  letter-spacing: -0.02em;
+  letter-spacing: 0.01em;
   line-height: 0.88;
 }
+
 
 /* Reveal used when the card lands */
 @keyframes card-in {
