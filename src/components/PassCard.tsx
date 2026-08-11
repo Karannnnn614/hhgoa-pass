@@ -103,28 +103,28 @@ const PassCard = forwardRef<
         />
       </svg>
 
-      {/* ---- sunset disc, right of the photo ---- */}
+      {/* ---- sunset disc, tucked right of the photo ---- */}
       <div
         className="absolute"
         style={{
-          left: 606,
-          top: 486,
-          width: 196,
-          height: 196,
+          left: 596,
+          top: 470,
+          width: 168,
+          height: 168,
           borderRadius: "50%",
           background: "#F2762F",
         }}
       />
-      {/* coral dune crossing under the sun */}
+      {/* soft coral dune passing in front of the sun's lower half */}
       <svg
         className="absolute"
-        style={{ left: 470, top: 570, width: 420, height: 130 }}
-        viewBox="0 0 420 130"
+        style={{ left: 440, top: 556, width: 460, height: 150 }}
+        viewBox="0 0 460 150"
         fill="none"
         aria-hidden
       >
         <path
-          d="M0 116c46-56 96-74 150-52 40 16 74 6 104-22 26-24 56-30 90-18l76 30v76H0v-14Z"
+          d="M0 150c30-8 52-26 78-48 30-26 66-30 104-12 30 14 58 10 86-10 30-22 64-24 100-6l92 44v32H0v0Z"
           fill="#E8563C"
         />
       </svg>
@@ -156,11 +156,11 @@ const PassCard = forwardRef<
         style={{
           left: "50%",
           transform: "translateX(-50%)",
-          top: 46,
-          width: 214,
-          height: 42,
+          top: 44,
+          width: 208,
+          height: 40,
           borderRadius: 999,
-          border: "5px solid #F2EDE3",
+          background: "#F2EDE3",
         }}
       />
 

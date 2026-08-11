@@ -127,23 +127,31 @@ export function PalmMark({ className = "", style }: MarkProps) {
       style={style}
       aria-hidden
     >
-      {/* curved trunk */}
+      {/* trunk, gently curved with segment ticks */}
       <path
-        d="M42 108C40 78 36 56 30 38"
+        d="M44 108C41 80 37 58 32 40"
         stroke="#F2762F"
-        strokeWidth="2.6"
+        strokeWidth="2.4"
         strokeLinecap="round"
       />
-      {/* fronds */}
       <path
-        d="M30 38C18 24 8 24 2 32M30 38c10-16 22-18 30-10M30 38c-6-16-2-26 6-32M30 38c12-10 24-8 30 0M30 38c-14-4-22 2-26 12"
+        d="M40 92h6M38 80h6M36 68h6M34 56h6"
         stroke="#F2762F"
-        strokeWidth="2.6"
+        strokeWidth="1.5"
         strokeLinecap="round"
+        opacity="0.8"
       />
-      {/* coconuts */}
-      <circle cx="34" cy="42" r="3" fill="#F2762F" />
-      <circle cx="26" cy="44" r="2.6" fill="#F2762F" />
+      {/* six drooping fronds radiating from the crown */}
+      <path
+        d="M32 40C20 22 8 20 1 28c10-2 18 2 23 10M32 40c11-19 26-21 34-11-10-1-19 3-25 12M32 40c-4-19 3-30 13-33-6 7-8 17-6 28M32 40c-16-8-27-3-31 8 9-6 18-6 26 0M32 40c17-6 29 0 33 11-9-7-19-8-28-4M32 40c-2-14 4-24 12-28"
+        stroke="#F2762F"
+        strokeWidth="2.2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      {/* coconuts at the crown */}
+      <circle cx="35" cy="45" r="2.8" fill="#F2762F" />
+      <circle cx="28" cy="47" r="2.4" fill="#F2762F" />
     </svg>
   );
 }
