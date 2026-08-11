@@ -108,10 +108,28 @@ const mask = await sharp(
   .png()
   .toBuffer();
 
+/* Round the outer corners. The mockup's card has rounded corners, so the
+   square crop leaves opaque near-white notches at each corner — visible
+   wherever the badge sits on a dark background (e.g. the OG preview).
+   dest-in keeps only what falls inside the rounded rectangle. */
+const CORNER = Math.round(46 * (W / 1000));
+const rounded = await sharp(
+  Buffer.from(
+    `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}">
+       <rect width="${W}" height="${H}" rx="${CORNER}" ry="${CORNER}" fill="#fff"/>
+     </svg>`,
+  ),
+)
+  .png()
+  .toBuffer();
+
 // palette-quantised: ~300KB instead of ~1MB, no visible banding in the
 // sunset gradient (checked), and every visitor downloads this file.
 await sharp(plate)
-  .composite([{ input: mask, blend: "dest-out" }])
+  .composite([
+    { input: mask, blend: "dest-out" }, // photo hole
+    { input: rounded, blend: "dest-in" }, // rounded outer corners
+  ])
   .png({ quality: 88, compressionLevel: 9, palette: true })
   .toFile("public/plate.png");
 

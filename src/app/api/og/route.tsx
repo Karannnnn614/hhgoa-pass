@@ -1,28 +1,64 @@
 import { ImageResponse } from "next/og";
-import { builderClass, builderId } from "@/lib/builderClass";
+import { builderId } from "@/lib/builderClass";
+import { siteUrl } from "@/lib/siteUrl";
+import plate from "@/lib/plate.json";
 
 export const runtime = "nodejs";
 
 /**
- * Server-side card for link previews. Satori supports flexbox only —
- * this is a deliberately simplified sibling of PassCard, not a reuse of it.
- * The user's photo can't ride along in a URL, so the photo slot becomes a
- * branded monogram. Never a blank thumbnail.
+ * Link-preview card. Renders the actual badge artwork (public/plate.png) as
+ * the left panel with the user's details beside it, so a shared link previews
+ * as the pass rather than a generic banner.
+ *
+ * Satori supports flexbox only — no grid, no CSS filters.
  */
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
-  const name = (searchParams.get("n") || "A Builder").slice(0, 24);
-  const stack = (searchParams.get("s") || "Full-stack").slice(0, 28);
+  const name = (searchParams.get("n") || "A Builder").slice(0, 26);
+  const stack = (searchParams.get("s") || "Full-stack").slice(0, 40);
   const handle = (searchParams.get("h") || "").slice(0, 20).replace(/^@/, "");
-  const title = builderClass(stack, name);
   const id = builderId(name, handle);
+
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  const line1 = parts[0] ?? "YOUR";
+  const line2 = parts.slice(1).join(" ");
+  const longest = Math.max(line1.length, line2.length);
+  let nameSize = 78;
+  if (longest > 12) nameSize = 54;
+  else if (longest > 9) nameSize = 66;
+
+  const details = [stack, handle ? `@${handle}` : ""].filter(Boolean).join("  ·  ");
+
+  /* Badge geometry: the plate scaled down to fit the preview's left panel.
+     K converts plate pixels -> preview pixels so the text lands in the same
+     places as on the real card. */
+  const PH = 546;
+  const K = PH / plate.H;
+  const PW = Math.round(plate.W * K);
+  const photo = {
+    cx: plate.photo.cx * K,
+    cy: plate.photo.cy * K,
+    r: plate.photo.r * K,
+  };
+  const badgeName = (longest > 12 ? 74 : longest > 9 ? 86 : 96) * K;
+
   const initials =
-    name
-      .split(/\s+/)
-      .filter(Boolean)
+    parts
       .slice(0, 2)
       .map((w) => w[0]?.toUpperCase() ?? "")
       .join("") || "HH";
+
+  // The badge art, inlined so Satori can draw it.
+  let plateSrc = "";
+  try {
+    const res = await fetch(`${siteUrl()}/plate.png`);
+    if (res.ok) {
+      const buf = Buffer.from(await res.arrayBuffer());
+      plateSrc = `data:image/png;base64,${buf.toString("base64")}`;
+    }
+  } catch {
+    /* fall through — the layout still reads as the event without it */
+  }
 
   return new ImageResponse(
     (
@@ -31,183 +67,216 @@ export async function GET(req: Request) {
           width: "100%",
           height: "100%",
           display: "flex",
-          flexDirection: "column",
-          justifyContent: "space-between",
-          background: "linear-gradient(150deg,#0E2620 0%,#123329 45%,#071613 100%)",
-          padding: "56px 64px",
+          background: "#0A2622",
           fontFamily: "sans-serif",
           position: "relative",
         }}
       >
-        {/* sunset disc */}
+        {/* sunset disc, bled off the right edge */}
         <div
           style={{
             position: "absolute",
-            right: -110,
+            right: -190,
             top: 190,
-            width: 300,
-            height: 300,
+            width: 380,
+            height: 380,
             borderRadius: 999,
-            background: "linear-gradient(180deg,#F5A03C 0%,#E8663C 65%,#E8336E 100%)",
-            opacity: 0.9,
+            background: "#F2762F",
             display: "flex",
           }}
         />
 
-        {/* header */}
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-          <div style={{ display: "flex", flexDirection: "column" }}>
-            <div
-              style={{
-                fontSize: 46,
-                fontWeight: 900,
-                color: "#F5E9CF",
-                letterSpacing: -1,
-                lineHeight: 1,
-                display: "flex",
-              }}
-            >
-              HACKER HOUSE
-            </div>
-            <div
-              style={{
-                fontSize: 20,
-                fontWeight: 700,
-                color: "#E8336E",
-                letterSpacing: 6,
-                marginTop: 10,
-                display: "flex",
-              }}
-            >
-              GOA · INDIA · 2026
-            </div>
-          </div>
+        {/* ---- left: the badge ---- */}
+        <div
+          style={{
+            width: 470,
+            height: "100%",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            paddingLeft: 40,
+          }}
+        >
+          {/* the badge, with this person's details drawn onto it */}
           <div
             style={{
-              fontSize: 19,
-              fontWeight: 700,
-              color: "#F5A03C",
-              letterSpacing: 6,
+              position: "relative",
+              width: PW,
+              height: PH,
               display: "flex",
+              // no radius here: the plate art already carries its own
+              // rounded corners, and a second one leaves white notches
             }}
           >
-            BUILDER PASS
-          </div>
-        </div>
+            {plateSrc && (
+              // Satori renders raw JSX to an image; next/image does not exist
+              // in this context, so a plain <img> is required here.
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={plateSrc}
+                width={PW}
+                height={PH}
+                style={{ position: "absolute", left: 0, top: 0 }}
+                alt=""
+              />
+            )}
 
-        {/* body */}
-        <div style={{ display: "flex", alignItems: "center", gap: 40 }}>
-          <div
-            style={{
-              width: 190,
-              height: 190,
-              borderRadius: 999,
-              background: "linear-gradient(150deg,#F5A03C,#E8336E)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
+            {/* initials monogram in the photo circle (no photo in the URL) */}
             <div
               style={{
-                width: 172,
-                height: 172,
+                position: "absolute",
+                left: photo.cx - photo.r,
+                top: photo.cy - photo.r,
+                width: photo.r * 2,
+                height: photo.r * 2,
                 borderRadius: 999,
-                background: "#071613",
+                background: "#0B211E",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                fontSize: 68,
+                fontSize: photo.r * 0.8,
                 fontWeight: 900,
-                color: "#F5E9CF",
+                color: "#F2E2BC",
               }}
             >
               {initials}
             </div>
-          </div>
 
-          <div style={{ display: "flex", flexDirection: "column", flex: 1 }}>
+            {/* name on the badge */}
             <div
               style={{
-                fontSize: name.length > 14 ? 62 : 76,
+                position: "absolute",
+                left: 62 * K,
+                top: 980 * K,
+                display: "flex",
+                flexDirection: "column",
+                fontSize: badgeName,
                 fontWeight: 900,
-                color: "#F5E9CF",
-                lineHeight: 1,
-                letterSpacing: -2,
+                color: "#F2E2BC",
+                lineHeight: 1.02,
+              }}
+            >
+              <span>{line1.toUpperCase()}</span>
+              {line2 && <span>{line2.toUpperCase()}</span>}
+            </div>
+
+            {/* builder id + dates on the badge */}
+            <div
+              style={{
+                position: "absolute",
+                left: 175 * K,
+                top: 1305 * K,
+                fontSize: 34 * K,
+                fontWeight: 700,
+                color: "#F2762F",
                 display: "flex",
               }}
             >
-              {name.toUpperCase()}
+              {id}
             </div>
             <div
               style={{
-                fontSize: 26,
-                color: "#F5E9CF",
-                opacity: 0.85,
-                marginTop: 14,
+                position: "absolute",
+                left: 175 * K,
+                top: 1418 * K,
+                fontSize: 32 * K,
+                fontWeight: 700,
+                color: "#F2EDE3",
                 display: "flex",
               }}
             >
-              {stack}
-              {handle ? `  ·  @${handle}` : ""}
-            </div>
-            <div
-              style={{
-                marginTop: 18,
-                display: "flex",
-                alignItems: "center",
-                gap: 14,
-                border: "2px solid rgba(232,51,110,0.6)",
-                background: "rgba(232,51,110,0.12)",
-                borderRadius: 999,
-                padding: "10px 22px",
-                alignSelf: "flex-start",
-              }}
-            >
-              <span
-                style={{
-                  fontSize: 15,
-                  fontWeight: 700,
-                  color: "#E8336E",
-                  letterSpacing: 4,
-                  display: "flex",
-                }}
-              >
-                CLASS
-              </span>
-              <span
-                style={{
-                  fontSize: 27,
-                  fontWeight: 900,
-                  color: "#F5E9CF",
-                  display: "flex",
-                }}
-              >
-                {title}
-              </span>
+              28 OCT – 31 OCT 2026
             </div>
           </div>
         </div>
 
-        {/* footer */}
+        {/* ---- right: the details ---- */}
         <div
           style={{
+            flex: 1,
             display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            borderTop: "2px solid rgba(245,233,207,0.2)",
-            paddingTop: 22,
+            flexDirection: "column",
+            justifyContent: "center",
+            padding: "0 60px 0 20px",
           }}
         >
-          <div style={{ fontSize: 22, fontWeight: 700, color: "#F5A03C", display: "flex" }}>
-            {id}
+          <div
+            style={{
+              fontSize: 22,
+              fontWeight: 700,
+              color: "#E8336E",
+              letterSpacing: 5,
+              display: "flex",
+            }}
+          >
+            HACKER HOUSE · GOA 2026
           </div>
-          <div style={{ fontSize: 22, fontWeight: 700, color: "#F5E9CF", opacity: 0.8, display: "flex" }}>
-            28 — 31 OCT 2026
+
+          <div
+            style={{
+              fontSize: nameSize,
+              fontWeight: 900,
+              color: "#F2E2BC",
+              lineHeight: 1.05,
+              letterSpacing: -1,
+              marginTop: 18,
+              display: "flex",
+              flexDirection: "column",
+            }}
+          >
+            <span>{line1.toUpperCase()}</span>
+            {line2 && <span>{line2.toUpperCase()}</span>}
           </div>
-          <div style={{ fontSize: 22, fontWeight: 700, display: "flex" }}>
-            <span style={{ color: "#F5E9CF" }}>BUILD. SHIP.&nbsp;</span>
-            <span style={{ color: "#F5A03C" }}>SUNSET.</span>
+
+          <div
+            style={{
+              fontSize: 27,
+              color: "#F2EDE3",
+              opacity: 0.9,
+              marginTop: 20,
+              display: "flex",
+            }}
+          >
+            {details}
+          </div>
+
+          <div
+            style={{
+              marginTop: 34,
+              paddingTop: 24,
+              borderTop: "2px solid rgba(242,237,227,0.22)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+            }}
+          >
+            <span
+              style={{
+                fontSize: 24,
+                fontWeight: 700,
+                color: "#F2762F",
+                display: "flex",
+              }}
+            >
+              {id}
+            </span>
+            <span
+              style={{
+                fontSize: 22,
+                fontWeight: 700,
+                color: "#F2EDE3",
+                opacity: 0.85,
+                display: "flex",
+              }}
+            >
+              28 — 31 OCT 2026
+            </span>
+          </div>
+
+          <div style={{ marginTop: 22, fontSize: 22, fontWeight: 700, display: "flex" }}>
+            <span style={{ color: "#F2EDE3" }}>CODE. BUILD.&nbsp;</span>
+            <span style={{ color: "#F2762F" }}>SUNSET.&nbsp;</span>
+            <span style={{ color: "#F2EDE3" }}>REPEAT.</span>
           </div>
         </div>
       </div>

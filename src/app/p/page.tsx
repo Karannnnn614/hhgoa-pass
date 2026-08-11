@@ -52,11 +52,17 @@ export default async function PassPermalink({
   const title = builderClass(s, n);
   const og = `/api/og?${new URLSearchParams({ n, s, h })}`;
 
+  const tweet = `https://x.com/intent/tweet?text=${encodeURIComponent(
+    `Just minted my Builder Pass for Hacker House Goa 2026 🌅\n\n${n} — ${title}\n\nBuild. Ship. Sunset. #FrameInGoa`,
+  )}&url=${encodeURIComponent(`${siteUrl()}/p?${new URLSearchParams({ n, s, h })}`)}`;
+
   return (
-    <main className="flex min-h-dvh flex-col items-center justify-center gap-8 bg-ink px-6 py-16 text-center">
-      <div className="w-full max-w-2xl overflow-hidden rounded-2xl border border-cream/15">
+    <main className="flex min-h-dvh flex-col items-center justify-center gap-9 bg-ink px-6 py-16 text-center">
+      {/* The same image X shows in the link preview — it carries this
+          person's name, class and ID, so the page and the preview agree. */}
+      <div className="w-full max-w-2xl overflow-hidden rounded-2xl border border-cream/15 shadow-2xl shadow-black/60">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={og} alt={`${n} — ${title}`} className="w-full" />
+        <img src={og} alt={`${n} — Builder Pass`} className="w-full" />
       </div>
 
       <div>
@@ -67,12 +73,22 @@ export default async function PassPermalink({
         </p>
       </div>
 
-      <Link
-        href="/"
-        className="rounded-full bg-pink px-8 py-4 font-bold text-cream transition hover:brightness-110"
-      >
-        Mint your own Builder Pass
-      </Link>
+      <div className="flex w-full max-w-sm flex-col gap-3">
+        <a
+          href={tweet}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="rounded-full bg-pink px-8 py-4 font-bold text-cream transition hover:brightness-110"
+        >
+          Share this pass on X
+        </a>
+        <Link
+          href="/"
+          className="rounded-full border-2 border-cream/30 px-8 py-4 font-bold text-cream transition hover:border-cream/60 hover:bg-cream/5"
+        >
+          Mint your own Builder Pass
+        </Link>
+      </div>
 
       <p className="text-xs text-cream/40">
         Hacker House Goa 2026 · 28—31 Oct · #FrameInGoa
