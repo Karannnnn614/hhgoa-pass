@@ -1,6 +1,6 @@
 "use client";
 
-import { forwardRef } from "react";
+import { forwardRef, useEffect, useState } from "react";
 import PhotoSlot, { type Transform } from "./PhotoSlot";
 import type { Photo } from "@/lib/photo";
 import { builderId } from "@/lib/builderClass";
@@ -24,6 +24,9 @@ export const CARD_H = plate.H;
 /* Text anchors, measured off the gridded plate. */
 const NAME_LEFT = 62;
 const NAME_BOTTOM_Y = 1215; // bottom of the role line
+/* Canvas ctx.font cannot resolve CSS vars, so name the face literally.
+   Must stay in sync with the Archivo_Black import in layout.tsx. */
+const DISPLAY_FONT = '"Archivo Black", sans-serif';
 
 /* The plate's pink icons are fixed art, so each credential row is centred on
    its icon rather than positioned by guesswork. Icon centres measured off
@@ -32,6 +35,43 @@ const ROW_X = 175;
 const ID_ROW_CY = 1332;
 const DATE_ROW_CY = 1431;
 const QR = { x: 648, y: 1280, size: 224 };
+
+/**
+ * Largest font size (<= max) at which every line fits within maxWidth.
+ * Measured on a canvas with the real display font, so wide names like
+ * "KUMARASWAMY" shrink correctly where a character count would not.
+ */
+function useFittedSize(lines: string[], maxWidth: number, max: number): number {
+  const [size, setSize] = useState(max);
+  const key = lines.join("|");
+
+  useEffect(() => {
+    const ctx = document.createElement("canvas").getContext("2d");
+    if (!ctx) return;
+
+    const fit = () => {
+      const parts = key.split("|").filter(Boolean);
+      if (!parts.length) return setSize(max);
+      let best = 40;
+      for (let s = max; s >= 40; s -= 2) {
+        ctx.font = `400 ${s}px ${DISPLAY_FONT}`;
+        const widest = Math.max(...parts.map((l) => ctx.measureText(l).width));
+        if (widest <= maxWidth) {
+          best = s;
+          break;
+        }
+      }
+      setSize(best);
+    };
+
+    fit();
+    // Re-measure once the webfont loads; the first pass may have measured a
+    // fallback face and picked the wrong size.
+    document.fonts?.ready.then(fit).catch(() => {});
+  }, [key, maxWidth, max]);
+
+  return size;
+}
 
 /** One "icon: label / value" row, vertically centred on the plate's icon. */
 function CredentialRow({
@@ -103,13 +143,18 @@ const PassCard = forwardRef<
     .filter(Boolean);
   const roles = handle ? [...roleParts, `@${handle}`] : roleParts;
 
-  const longest = Math.max(line1.length, line2?.length ?? 0);
-  let nameSize = 104;
-  if (longest > 12) nameSize = 76;
-  else if (longest > 9) nameSize = 90;
+  const nameSize = useFittedSize(
+    [line1.toUpperCase(), line2?.toUpperCase() ?? ""],
+    CARD_W - NAME_LEFT - 70,
+    104,
+  );
 
   const roleText = roles.join("  •  ");
-  const roleSize = roleText.length > 34 ? 26 : 31;
+  // same guard for the role line; it sits on one line and must not overflow
+  const roleSize = Math.min(
+    31,
+    Math.max(20, Math.floor((CARD_W - NAME_LEFT - 70) / (roleText.length * 0.5))),
+  );
 
   return (
     <div

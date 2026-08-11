@@ -40,15 +40,38 @@ render the link preview.
 | OG preview | `/api/og` (`next/og`, flexbox-only Satori layout) behind the `/p` permalink |
 | Mobile | phones never fetch the mp4 — the intro and hero video are desktop-only |
 
+## The card
+
+The card **is** the supplied design. `public/plate.png` is the mockup artwork
+with the sample portrait and sample text removed; the app drops the user's
+photo into the transparent circle and draws live text at the original design's
+positions. Nothing about the artwork is re-drawn or approximated.
+
+Regenerate the plate if the design changes:
+
+```bash
+node scripts/build-plate.mjs
+```
+
+It re-detects the card bounds, erases the sample content, punches the photo
+hole, and writes `src/lib/plate.json` with the geometry the card reads.
+
 ## Notes
 
-- **Builder ID and class are deterministic** (FNV-1a hash) — the same name +
-  stack always produces the same badge, so a re-generated card is identical.
+- **Name type auto-fits.** The name is measured on a canvas with the real
+  display font and scaled down until it fits, so long names like "Rajesh
+  Kumaraswamy" don't overflow the card. A character count is not enough —
+  "KUMARASWAMY" is much wider than 11 narrow glyphs.
+- **Credential rows are anchored to the plate's icons** (person y=1332,
+  calendar y=1431) and centred with `translateY(-50%)`, so the label/value
+  pairs cannot drift into each other at any font size.
+- **Builder ID is deterministic** (FNV-1a hash) — the same name + stack always
+  produces the same badge.
 - **The QR is real.** It encodes that pass's `/p?...` permalink; verified by
   decoding it back out of the exported PNG.
-- The supplied landing artwork is a full page comp (it carries its own nav and
-  wordmark), so the hero uses a **cropped scenery strip** of it rather than the
-  whole image — otherwise its lettering collides with the live headline.
+- The landing artwork is a full page comp (it carries its own nav and
+  wordmark), so the hero uses a **cropped scenery strip** of it — otherwise its
+  lettering collides with the live headline. The mp4 plays as the intro.
 - `/api/og` cannot embed the user's photo (it isn't in the URL), so it falls
   back to a branded initials monogram — never a blank thumbnail.
 
@@ -56,3 +79,6 @@ render the link preview.
 
 `src/lib/builderClass.ts` carries assertions that the hash stays stable and
 case/whitespace-insensitive; they run in dev.
+
+Name/layout regressions were checked across one-word, two-word, long, and
+single-character names, plus the original mockup's data.

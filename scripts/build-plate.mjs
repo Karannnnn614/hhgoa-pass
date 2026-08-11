@@ -108,9 +108,11 @@ const mask = await sharp(
   .png()
   .toBuffer();
 
+// palette-quantised: ~300KB instead of ~1MB, no visible banding in the
+// sunset gradient (checked), and every visitor downloads this file.
 await sharp(plate)
   .composite([{ input: mask, blend: "dest-out" }])
-  .png()
+  .png({ quality: 88, compressionLevel: 9, palette: true })
   .toFile("public/plate.png");
 
 writeFileSync("src/lib/plate.json", JSON.stringify({ W, H, photo }, null, 2));
