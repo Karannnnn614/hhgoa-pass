@@ -5,16 +5,17 @@ import HeroBackdrop from "@/components/HeroBackdrop";
 import Intro from "@/components/Intro";
 import PhotoTools from "@/components/PhotoTools";
 import ScaledCard from "@/components/ScaledCard";
-import PassCard, { type PassData } from "@/components/PassCard";
+import { type PassData } from "@/components/PassCard";
 import { CalendarIcon, HHLogo, HouseMark, PersonIcon, WaveMark } from "@/components/marks";
 import { intake, type Photo } from "@/lib/photo";
 import { download, slugify, toPng } from "@/lib/render";
 import { generatePassId } from "@/lib/builderClass";
 import { makeQr } from "@/lib/qr";
 import { LIMITS, validatePassInput, type ValidationErrors } from "@/lib/validation";
+import { compactPassLink } from "@/lib/passLink";
 
-const SHARE_TEXT = (name: string, title: string, passId: string) =>
-  `Just minted my Builder Pass for Hacker House Goa 2026 🌅\n\n${name} — ${title} [${passId}]\n\nBuild. Ship. Sunset. #FrameInGoa`;
+const SHARE_TEXT = (firstName: string) =>
+  `Hey, ${firstName} here. A founder in the making just minted a Builder Pass.\n\nSee you at Hacker House Goa 2026. #FrameInGoa\n\nClaim yours:`;
 
 export default function Home() {
   const [photo, setPhoto] = useState<Photo | null>(null);
@@ -45,17 +46,10 @@ export default function Home() {
   const errors: ValidationErrors = validatePassInput(form);
   const hasErrors = Object.keys(errors).length > 0;
 
-  // Construct permalink for QR and sharing
+  // Pack the live public fields into one compact, portable URL path token.
   const getPermalink = useCallback(() => {
     if (typeof window === "undefined") return "";
-    const params = new URLSearchParams({
-      fn: form.firstName.trim(),
-      ln: form.lastName.trim(),
-      t: form.profileTitle.trim(),
-      tm: form.teamName.trim(),
-      x: form.xUsername.trim().replace(/^@/, ""),
-    });
-    return `${window.location.origin}/pass/${passId}?${params}`;
+    return compactPassLink(window.location.origin, passId, form);
   }, [form, passId]);
 
   // Update QR Code when inputs change
@@ -128,9 +122,8 @@ export default function Home() {
   };
 
   const onShareX = () => {
-    const fullName = `${form.firstName} ${form.lastName}`.trim() || "Builder";
     const permalink = getPermalink();
-    const text = SHARE_TEXT(fullName, form.profileTitle, passId);
+    const text = SHARE_TEXT(form.firstName.trim() || "Builder");
     const url = `https://x.com/intent/tweet?text=${encodeURIComponent(
       text
     )}&url=${encodeURIComponent(permalink)}`;
