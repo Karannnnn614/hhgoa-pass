@@ -25,8 +25,14 @@ export const CARD_H = plate.H;
 const NAME_LEFT = 62;
 const NAME_BOTTOM_Y = 1215; // bottom of the role line
 /* Canvas ctx.font cannot resolve CSS vars, so name the face literally.
-   Must stay in sync with the Archivo_Black import in layout.tsx. */
-const DISPLAY_FONT = '"Archivo Black", sans-serif';
+   next/font also registers a metric-matched fallback, so include it — the
+   pair is what the .display class actually computes to. */
+const DISPLAY_FONT = '"Archivo Black", "Archivo Black Fallback", sans-serif';
+
+/* Name type. 92 is the largest size the design comfortably carries; longer
+   names step down from here. Measured, not guessed. */
+const NAME_MAX_SIZE = 92;
+const NAME_MIN_SIZE = 40;
 
 /* The plate's pink icons are fixed art, so each credential row is centred on
    its icon rather than positioned by guesswork. Icon centres measured off
@@ -41,33 +47,35 @@ const QR = { x: 648, y: 1280, size: 224 };
  * Measured on a canvas with the real display font, so wide names like
  * "KUMARASWAMY" shrink correctly where a character count would not.
  */
+/** Measures the widest line and returns the largest size that fits. */
+function measureFit(key: string, maxWidth: number, max: number): number {
+  if (typeof document === "undefined") return max;
+  const ctx = document.createElement("canvas").getContext("2d");
+  if (!ctx) return max;
+  const parts = key.split("|").filter(Boolean);
+  if (!parts.length) return max;
+
+  for (let s = max; s >= NAME_MIN_SIZE; s--) {
+    ctx.font = `400 ${s}px ${DISPLAY_FONT}`;
+    if (Math.max(...parts.map((l) => ctx.measureText(l).width)) <= maxWidth) {
+      return s;
+    }
+  }
+  return NAME_MIN_SIZE;
+}
+
 function useFittedSize(lines: string[], maxWidth: number, max: number): number {
-  const [size, setSize] = useState(max);
   const key = lines.join("|");
+  /* Computed during the initial render, not in an effect: an effect would
+     paint one oversized frame first, which the rasteriser can capture. */
+  const [size, setSize] = useState(() => measureFit(key, maxWidth, max));
 
   useEffect(() => {
-    const ctx = document.createElement("canvas").getContext("2d");
-    if (!ctx) return;
-
-    const fit = () => {
-      const parts = key.split("|").filter(Boolean);
-      if (!parts.length) return setSize(max);
-      let best = 40;
-      for (let s = max; s >= 40; s -= 2) {
-        ctx.font = `400 ${s}px ${DISPLAY_FONT}`;
-        const widest = Math.max(...parts.map((l) => ctx.measureText(l).width));
-        if (widest <= maxWidth) {
-          best = s;
-          break;
-        }
-      }
-      setSize(best);
-    };
-
-    fit();
-    // Re-measure once the webfont loads; the first pass may have measured a
-    // fallback face and picked the wrong size.
-    document.fonts?.ready.then(fit).catch(() => {});
+    const apply = () => setSize(measureFit(key, maxWidth, max));
+    apply();
+    // Re-measure once the webfont is ready — the first pass may have measured
+    // the fallback face.
+    document.fonts?.ready.then(apply).catch(() => {});
   }, [key, maxWidth, max]);
 
   return size;
@@ -145,15 +153,15 @@ const PassCard = forwardRef<
 
   const nameSize = useFittedSize(
     [line1.toUpperCase(), line2?.toUpperCase() ?? ""],
-    CARD_W - NAME_LEFT - 70,
-    104,
+    CARD_W - NAME_LEFT - 78,
+    NAME_MAX_SIZE,
   );
 
   const roleText = roles.join("  •  ");
   // same guard for the role line; it sits on one line and must not overflow
   const roleSize = Math.min(
-    31,
-    Math.max(20, Math.floor((CARD_W - NAME_LEFT - 70) / (roleText.length * 0.5))),
+    28,
+    Math.max(19, Math.floor((CARD_W - NAME_LEFT - 78) / (roleText.length * 0.52))),
   );
 
   return (
