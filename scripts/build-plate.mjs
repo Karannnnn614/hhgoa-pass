@@ -14,8 +14,7 @@
 import sharp from "sharp";
 import { writeFileSync } from "node:fs";
 
-const SRC =
-  "C:/Users/karan/Desktop/Builder pass/WhatsApp Image 2026-08-11 at 11.59.44.jpeg";
+const SRC = "C:/Users/karan/Desktop/Builder pass/Actual frame.png";
 
 // --- detect the card body (dark card on a near-white page) ---
 const { data, info } = await sharp(SRC)
