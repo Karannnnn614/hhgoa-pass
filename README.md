@@ -1,36 +1,58 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# HH Goa 2026 — Builder Pass Generator
 
-## Getting Started
+Upload a photo → get a branded Hacker House Goa 2026 builder badge → download the PNG → share to X with `#FrameInGoa`.
 
-First, run the development server:
+No login. No signup gate. **The photo never leaves the browser** — all image
+processing and rasterising is client-side.
+
+## Run it
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev      # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Deploy (Vercel)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+npx vercel --prod
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Then set one env var so OG tags resolve to absolute URLs:
 
-## Learn More
+```
+NEXT_PUBLIC_SITE_URL = https://your-deployment.vercel.app
+```
 
-To learn more about Next.js, take a look at the following resources:
+Without it, metadata falls back to `http://localhost:3000` and X will not
+render the link preview.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## How it hits the brief
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+| Requirement | Where |
+|---|---|
+| JPG / PNG / **HEIC** | `src/lib/photo.ts` — `heic2any` loaded lazily, only when a HEIC actually arrives |
+| Any aspect ratio, off-centre crops | cover-fit + drag / pinch / zoom in `PhotoSlot.tsx`, visible controls in `PhotoTools.tsx` |
+| EXIF orientation | `exifOrientation()` parses the APP1 tag and normalises on canvas, so iPhone photos aren't sideways |
+| Speed | uploads downscaled to 1400px before render; `html-to-image` is dynamically imported after first upload |
+| Real downloadable file | 2400×3000 PNG blob (2× of 1200×1500) via `render.ts` |
+| Share to X | `x.com/intent/tweet` with pre-written caption + `#FrameInGoa` |
+| OG preview | `/api/og` (`next/og`, flexbox-only Satori layout) behind the `/p` permalink |
+| Mobile | phones never fetch the mp4 — the intro and hero video are desktop-only |
 
-## Deploy on Vercel
+## Notes
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- **Builder ID and class are deterministic** (FNV-1a hash) — the same name +
+  stack always produces the same badge, so a re-generated card is identical.
+- **The QR is real.** It encodes that pass's `/p?...` permalink; verified by
+  decoding it back out of the exported PNG.
+- The supplied landing artwork is a full page comp (it carries its own nav and
+  wordmark), so the hero uses a **cropped scenery strip** of it rather than the
+  whole image — otherwise its lettering collides with the live headline.
+- `/api/og` cannot embed the user's photo (it isn't in the URL), so it falls
+  back to a branded initials monogram — never a blank thumbnail.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Checks
+
+`src/lib/builderClass.ts` carries assertions that the hash stays stable and
+case/whitespace-insensitive; they run in dev.
