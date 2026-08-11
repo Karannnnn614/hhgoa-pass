@@ -23,12 +23,62 @@ export const CARD_H = plate.H;
 
 /* Text anchors, measured off the gridded plate. */
 const NAME_LEFT = 62;
-const NAME_BOTTOM_Y = 1190; // baseline block bottom of the role line
-const ID_X = 175;
-const ID_Y = 1318;
-const DATE_X = 175;
-const DATE_Y = 1412;
-const QR = { x: 645, y: 1272, size: 232 };
+const NAME_BOTTOM_Y = 1215; // bottom of the role line
+
+/* The plate's pink icons are fixed art, so each credential row is centred on
+   its icon rather than positioned by guesswork. Icon centres measured off
+   the plate: person y=1332, calendar y=1431. */
+const ROW_X = 175;
+const ID_ROW_CY = 1332;
+const DATE_ROW_CY = 1431;
+const QR = { x: 648, y: 1280, size: 224 };
+
+/** One "icon: label / value" row, vertically centred on the plate's icon. */
+function CredentialRow({
+  x,
+  cy,
+  label,
+  value,
+  valueColor,
+  valueSize,
+}: Readonly<{
+  x: number;
+  cy: number;
+  label: string;
+  value: string;
+  valueColor: string;
+  valueSize: number;
+}>) {
+  return (
+    <div
+      className="pointer-events-none absolute"
+      style={{ left: x, top: cy, transform: "translateY(-50%)" }}
+    >
+      <div
+        style={{
+          fontSize: 25,
+          letterSpacing: "0.05em",
+          color: "#F2EDE3",
+          lineHeight: 1.1,
+        }}
+      >
+        {label}
+      </div>
+      <div
+        className="font-bold"
+        style={{
+          fontSize: valueSize,
+          color: valueColor,
+          marginTop: 6,
+          lineHeight: 1.1,
+          whiteSpace: "nowrap",
+        }}
+      >
+        {value}
+      </div>
+    </div>
+  );
+}
 
 function splitName(full: string): [string, string | null] {
   const parts = full.trim().split(/\s+/).filter(Boolean);
@@ -147,21 +197,25 @@ const PassCard = forwardRef<
         </div>
       </div>
 
-      {/* builder id value */}
-      <div
-        className="pointer-events-none absolute font-bold"
-        style={{ left: ID_X, top: ID_Y, fontSize: 34, color: "#F2762F" }}
-      >
-        {id}
-      </div>
-
-      {/* event dates value */}
-      <div
-        className="pointer-events-none absolute font-bold"
-        style={{ left: DATE_X, top: DATE_Y, fontSize: 32, color: "#F2EDE3" }}
-      >
-        28 OCT – 31 OCT 2026
-      </div>
+      {/* Credential rows. Each is vertically centred on its plate icon via
+          translateY(-50%), so the label/value pair can never drift into the
+          row below regardless of font size. */}
+      <CredentialRow
+        x={ROW_X}
+        cy={ID_ROW_CY}
+        label="BUILDER ID"
+        value={id}
+        valueColor="#F2762F"
+        valueSize={34}
+      />
+      <CredentialRow
+        x={ROW_X}
+        cy={DATE_ROW_CY}
+        label="EVENT DATES"
+        value="28 OCT – 31 OCT 2026"
+        valueColor="#F2EDE3"
+        valueSize={32}
+      />
 
       {/* QR */}
       {data.qr && (
