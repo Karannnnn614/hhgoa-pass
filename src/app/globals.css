@@ -13,6 +13,7 @@
 
   --font-display: var(--font-display), ui-sans-serif, system-ui, sans-serif;
   --font-sans: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-roboto-condensed: var(--font-roboto-condensed), "Roboto Condensed", sans-serif;
 }
 
 html,

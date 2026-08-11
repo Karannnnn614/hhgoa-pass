@@ -19,7 +19,6 @@ export const LIMITS = {
   lastName: 14,
   profileTitle: 45,
   teamName: 18,
-  xUsername: 15,
 };
 
 export function validatePassInput(input: PassFormInput): ValidationErrors {
@@ -29,7 +28,6 @@ export function validatePassInput(input: PassFormInput): ValidationErrors {
   const cleanLastName = input.lastName.trim();
   const cleanTitle = input.profileTitle.trim();
   const cleanTeam = input.teamName.trim();
-  const cleanHandle = input.xUsername.trim().replace(/^@/, "");
 
   if (cleanFirstName.length > LIMITS.firstName) {
     errors.firstName = `First name must be ${LIMITS.firstName} characters or fewer.`;
@@ -45,10 +43,6 @@ export function validatePassInput(input: PassFormInput): ValidationErrors {
 
   if (cleanTeam.length > LIMITS.teamName) {
     errors.teamName = `Team name must be ${LIMITS.teamName} characters or fewer.`;
-  }
-
-  if (cleanHandle.length > LIMITS.xUsername) {
-    errors.xUsername = `X username must be ${LIMITS.xUsername} characters or fewer.`;
   }
 
   return errors;

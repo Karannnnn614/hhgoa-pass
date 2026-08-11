@@ -41,7 +41,7 @@ const ID_RIGHT = 96; // builder id, right side of the bottom box
 
 /* Canvas ctx.font cannot resolve CSS vars, so name the face literally.
    next/font also registers a metric-matched fallback. */
-const DISPLAY_FONT = '"Archivo Black", "Archivo Black Fallback", sans-serif';
+const DISPLAY_FONT = '"Roboto Condensed", "Roboto Condensed Fallback", sans-serif';
 const NAME_MAX_SIZE = 86;
 const NAME_MIN_SIZE = 34;
 
@@ -61,7 +61,7 @@ function measureFit(key: string, maxWidth: number, max: number): number {
   if (!parts.length) return max;
 
   for (let s = max; s >= NAME_MIN_SIZE; s--) {
-    ctx.font = `400 ${s}px ${DISPLAY_FONT}`;
+    ctx.font = `700 ${s}px ${DISPLAY_FONT}`;
     if (Math.max(...parts.map((l) => ctx.measureText(l).width)) <= maxWidth) {
       return s;
     }
@@ -132,8 +132,7 @@ const PassCard = forwardRef<
   const handle = (data.handle || data.xUsername || "").trim().replace(/^@/, "");
   const team = (data.team || data.teamName || "").trim();
   const stack = (data.stack || "").trim();
-  // "Builder" is the default title, per the design.
-  const title = (data.title || data.profileTitle || "").trim() || "Builder";
+  const title = (data.title || data.profileTitle || "").trim();
   const id = data.passId || builderId(raw, handle);
 
   const nameSize = useFittedSize(
@@ -196,8 +195,10 @@ const PassCard = forwardRef<
         style={{ left: PAD_L, right: 90, bottom: CARD_H - NAME_BOTTOM }}
       >
         <div
-          className="display"
           style={{
+            fontFamily: 'var(--font-roboto-condensed), "Roboto Condensed", sans-serif',
+            fontWeight: 800,
+            textTransform: "uppercase",
             fontSize: nameSize,
             lineHeight: 1.0,
             color: "#F2E2BC",
@@ -215,6 +216,7 @@ const PassCard = forwardRef<
 
         <div
           style={{
+            fontFamily: 'var(--font-roboto-condensed), "Roboto Condensed", sans-serif',
             marginTop: 18,
             fontSize: subSize,
             color: "#F2762F",

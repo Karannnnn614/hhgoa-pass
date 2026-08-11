@@ -353,7 +353,6 @@ export default function Home() {
             <FormField
               label="X USERNAME"
               value={form.xUsername}
-              limit={LIMITS.xUsername}
               error={errors.xUsername}
               onChange={(v) => setForm((f) => ({ ...f, xUsername: v }))}
               placeholder="sukuna1709"
@@ -443,14 +442,14 @@ function FormField({
 }: {
   label: string;
   value: string;
-  limit: number;
+  limit?: number;
   error?: string;
   onChange: (v: string) => void;
   placeholder: string;
   prefix?: string;
 }) {
   const cleanVal = prefix ? value.replace(/^@/, "") : value;
-  const isOver = cleanVal.length > limit;
+  const isOver = limit !== undefined && cleanVal.length > limit;
 
   return (
     <div className="space-y-1.5">
@@ -458,12 +457,18 @@ function FormField({
         <label className="font-bold tracking-[0.2em] text-cream/70 uppercase">
           {label}
         </label>
-        <span
-          className={`font-mono ${isOver ? "text-pink font-bold" : "text-cream/40"
-            }`}
-        >
-          {cleanVal.length} / {limit}
-        </span>
+        {limit !== undefined ? (
+          <span
+            className={`font-mono ${isOver ? "text-pink font-bold" : "text-cream/40"
+              }`}
+          >
+            {cleanVal.length} / {limit}
+          </span>
+        ) : (
+          <span className="font-mono text-cream/40">
+            {cleanVal.length}
+          </span>
+        )}
       </div>
 
       <div className="relative flex items-center">
