@@ -5,7 +5,7 @@ export async function makeQr(url: string): Promise<string> {
     margin: 1,
     width: 304,
     errorCorrectionLevel: "M",
-    color: { dark: "#F5E8C8", light: "#001A1D" },
+    color: { dark: "#F8E7B9", light: "#00161A" },
   });
 }
 

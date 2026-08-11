@@ -10,19 +10,19 @@ function hash(s: string): number {
 }
 
 /**
- * Generate deterministic pass ID: HH26-BLD-XXXX
+ * Generate deterministic pass ID: HHG26-BLD-XXXX
  */
 export function generatePassId(firstName: string, lastName: string, xUsername = ""): string {
   const seed = `${firstName.trim().toLowerCase()}:${lastName.trim().toLowerCase()}:${xUsername.trim().toLowerCase().replace(/^@/, "")}`;
   const h = hash(seed || "builder");
   const n = (h % 9000) + 1000;
-  return `HH26-BLD-${n}`;
+  return `HHG26-BLD-${n}`;
 }
 
 export function builderId(name: string, handle = ""): string {
   const h = hash(name + "::" + handle.trim().toLowerCase().replace(/^@/, ""));
   const n = (h % 9000) + 1000;
-  return `HH26-BLD-${n}`;
+  return `HHG26-BLD-${n}`;
 }
 
 const TITLES = [

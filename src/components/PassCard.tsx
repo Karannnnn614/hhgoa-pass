@@ -24,12 +24,10 @@ function PlaceholderGraphic() {
   return (
     <svg viewBox="0 0 400 400" className="h-full w-full">
       <rect width="400" height="400" fill="#E3F5FF" />
-      {/* Cloud */}
       <path
         d="M 160 140 C 160 120, 185 105, 210 105 C 230 105, 245 115, 250 130 C 260 128, 275 135, 278 148 C 282 160, 272 172, 255 172 L 150 172 C 135 172, 125 160, 132 148 C 138 138, 148 138, 160 140 Z"
         fill="#FFFFFF"
       />
-      {/* Hills */}
       <path
         d="M -20 280 Q 120 200 240 270 Q 320 320 420 240 L 420 420 L -20 420 Z"
         fill="#8AAE00"
@@ -50,44 +48,35 @@ const PassCard = forwardRef<
   const lastName = data.lastName.trim().toUpperCase();
   const profileTitle = data.profileTitle.trim();
   const teamName = data.teamName.trim().toUpperCase();
-  
+
   const cleanHandle = data.xUsername.trim().replace(/^@/, "");
   const xUsername = cleanHandle ? `@${cleanHandle.toUpperCase()}` : "";
-  const passId = data.passId || "HH26-BLD-1047";
+  const passId = data.passId || "HHG26-BLD-1047";
 
-  // Parse title into parts for pink bullet separator styling
   const titleParts = profileTitle
     ? profileTitle
-        .split(/[•·|]/)
-        .map((s) => s.trim())
-        .filter(Boolean)
+      .split(/[•·|-]/)
+      .map((s) => s.trim())
+      .filter(Boolean)
     : [];
 
   return (
     <div
       ref={ref}
       data-card
-      style={{ width: CARD_W, height: CARD_H }}
+      style={{ width: CARD_W, height: CARD_H, backgroundColor: "#00161A" }}
       className="relative overflow-hidden font-sans select-none"
     >
-      {/* 1. Base artwork plate (static design from reference/1.png) */}
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src="/base_plate.png"
-        alt="Builder Pass Background"
-        draggable={false}
-        className="pointer-events-none absolute inset-0 h-full w-full object-cover"
-      />
-
-      {/* 2. Dynamic Profile Photo Area (inside olive green/white ring) */}
+      {/* 1. Dynamic Profile Photo (Layered UNDER the base plate) */}
       <div
         className="absolute overflow-hidden rounded-full"
         style={{
-          left: plate.photo.cx - plate.photo.r, // 157.5px
-          top: plate.photo.cy - plate.photo.r,  // 395px
-          width: plate.photo.r * 2,             // 390px
-          height: plate.photo.r * 2,            // 390px
+          left: 160.5,
+          top: 399,
+          width: 382,
+          height: 382,
           backgroundColor: "#E3F5FF",
+          zIndex: 1,
         }}
       >
         {data.photo ? (
@@ -103,22 +92,34 @@ const PassCard = forwardRef<
         )}
       </div>
 
-      {/* 3. Dynamic Name (First Name & Last Name on separate lines) */}
+      {/* 2. Base Artwork Plate Overlay */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src="/base_plate.png"
+        alt="Builder Pass Background"
+        draggable={false}
+        className="pointer-events-none absolute inset-0 h-full w-full object-cover"
+        style={{ zIndex: 2 }}
+      />
+
+      {/* 3. Name Block */}
       <div
         className="pointer-events-none absolute flex flex-col justify-start"
         style={{
-          left: 148,
-          top: 932,
-          width: 500,
+          left: 151,
+          top: 940,
+          width: 520,
+          zIndex: 10,
         }}
       >
         <h1
-          className="font-black tracking-tight"
           style={{
-            fontFamily: 'var(--font-display), "Archivo Black", sans-serif',
-            fontSize: 82,
-            lineHeight: 0.96,
-            color: "#F5E8C8",
+            fontFamily: 'var(--font-sans), ui-sans-serif, system-ui, sans-serif',
+            fontSize: 58,
+            fontWeight: 900,
+            lineHeight: 1.05,
+            letterSpacing: "0.01em",
+            color: "#F8E7B9",
             textTransform: "uppercase",
             wordBreak: "break-word",
           }}
@@ -129,27 +130,29 @@ const PassCard = forwardRef<
         </h1>
       </div>
 
-      {/* 4. Dynamic Profile Title / Roles Line */}
+      {/* 4. Profile Titles / Roles */}
       <div
         className="pointer-events-none absolute flex items-center"
         style={{
-          left: 148,
-          top: 1090,
+          left: 151,
+          top: 1082,
           width: 600,
+          zIndex: 10,
         }}
       >
         {titleParts.length > 0 && (
           <p
-            className="flex flex-wrap items-center font-bold tracking-normal"
+            className="flex flex-wrap items-center font-bold"
             style={{
-              fontSize: 25,
-              color: "#F5E8C8",
+              fontFamily: 'var(--font-sans), ui-sans-serif, system-ui, sans-serif',
+              fontSize: 22,
+              color: "#F8E7B9",
               gap: 10,
             }}
           >
             {titleParts.map((part, i) => (
               <span key={i} className="flex items-center" style={{ gap: 10 }}>
-                {i > 0 && <span style={{ color: "#FF4265" }}>•</span>}
+                {i > 0 && <span style={{ color: "#F8E7B9" }}>-</span>}
                 <span>{part}</span>
               </span>
             ))}
@@ -157,21 +160,23 @@ const PassCard = forwardRef<
         )}
       </div>
 
-      {/* 5. Dynamic Team Name */}
+      {/* 5. Team Name */}
       <div
         className="pointer-events-none absolute"
         style={{
           left: 238,
-          top: 1195,
-          width: 360,
+          top: 1184,
+          width: 380,
+          zIndex: 10,
         }}
       >
         {teamName && (
           <span
-            className="block font-extrabold tracking-wide"
+            className="block font-bold tracking-wide"
             style={{
-              fontSize: 27,
-              color: "#F5E8C8",
+              fontFamily: 'var(--font-sans), ui-sans-serif, system-ui, sans-serif',
+              fontSize: 22,
+              color: "#F8E7B9",
               textTransform: "uppercase",
               lineHeight: 1.1,
               whiteSpace: "nowrap",
@@ -183,21 +188,23 @@ const PassCard = forwardRef<
         )}
       </div>
 
-      {/* 6. Dynamic X Username */}
+      {/* 6. X Username */}
       <div
         className="pointer-events-none absolute"
         style={{
           left: 238,
-          top: 1274,
-          width: 360,
+          top: 1272,
+          width: 380,
+          zIndex: 10,
         }}
       >
         {xUsername && (
           <span
-            className="block font-extrabold tracking-wide"
+            className="block font-bold tracking-wide"
             style={{
-              fontSize: 27,
-              color: "#F5E8C8",
+              fontFamily: 'var(--font-sans), ui-sans-serif, system-ui, sans-serif',
+              fontSize: 22,
+              color: "#F8E7B9",
               lineHeight: 1.1,
               whiteSpace: "nowrap",
               overflow: "hidden",
@@ -208,15 +215,16 @@ const PassCard = forwardRef<
         )}
       </div>
 
-      {/* 7. Dynamic QR Code */}
+      {/* 7. QR Code Area */}
       {data.qr && (
         <div
           className="pointer-events-none absolute overflow-hidden rounded-md"
           style={{
             left: 672,
-            top: 1152,
-            width: 152,
-            height: 152,
+            top: 1148,
+            width: 136,
+            height: 136,
+            zIndex: 10,
           }}
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -228,21 +236,23 @@ const PassCard = forwardRef<
         </div>
       )}
 
-      {/* 8. Dynamic Pass ID */}
+      {/* 8. Pass ID */}
       <div
         className="pointer-events-none absolute text-center"
         style={{
-          left: 645,
-          top: 1330,
-          width: 206,
+          left: 635,
+          top: 1302,
+          width: 210,
+          zIndex: 10,
         }}
       >
         <span
-          className="block font-mono font-bold tracking-wider"
+          className="block font-mono font-bold"
           style={{
             fontFamily: 'var(--font-mono), "Space Mono", "Courier New", monospace',
-            fontSize: 21,
-            color: "#FF7A32",
+            fontSize: 18,
+            letterSpacing: "0.06em",
+            color: "#FF914D",
             lineHeight: 1,
             textTransform: "uppercase",
           }}

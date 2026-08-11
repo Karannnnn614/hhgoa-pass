@@ -1,13 +1,13 @@
 @import "tailwindcss";
 
 @theme {
-  /* HH Goa 2026 — locked palette matching reference image */
-  --color-ink: #001c1e;
-  --color-deep: #002426;
-  --color-deep-2: #002a2c;
-  --color-cream: #f5e8c8;
+  /* HH Goa 2026 — locked palette matching reference image 1.png */
+  --color-ink: #00161a;
+  --color-deep: #00161a;
+  --color-deep-2: #00161a;
+  --color-cream: #f8e7b9;
   --color-pink: #ff3f68;
-  --color-orange: #ff8a24;
+  --color-orange: #ff7a32;
   --color-gold: #c88724;
   --color-sand: #cbbb99;
 

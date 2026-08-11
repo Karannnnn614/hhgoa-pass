@@ -1,6 +1,6 @@
 export default function HeroBackdrop() {
   return (
-    <div className="absolute inset-0 overflow-hidden bg-[#001D1F] pointer-events-none">
+    <div className="absolute inset-0 overflow-hidden bg-[#00161A] pointer-events-none">
       <picture className="absolute inset-0 w-full h-full">
         <source
           media="(min-width: 768px)"

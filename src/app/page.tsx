@@ -257,7 +257,7 @@ export default function Home() {
         {/* Grid: Form on Left, Card Preview on Right */}
         <div className="grid gap-12 lg:grid-cols-12 items-start">
           {/* Form Side */}
-          <div className="order-1 lg:order-1 lg:col-span-6 bg-ink/60 p-6 md:p-8 rounded-3xl border border-cream/15 backdrop-blur-md space-y-6">
+          <div className="order-1 lg:order-1 lg:col-span-6 bg-[#00161A] p-6 md:p-8 rounded-3xl border border-cream/20 space-y-6">
             <h3 className="display text-2xl text-cream border-b border-cream/10 pb-3">
               Pass Details
             </h3>
@@ -459,9 +459,8 @@ function FormField({
           {label}
         </label>
         <span
-          className={`font-mono ${
-            isOver ? "text-pink font-bold" : "text-cream/40"
-          }`}
+          className={`font-mono ${isOver ? "text-pink font-bold" : "text-cream/40"
+            }`}
         >
           {cleanVal.length} / {limit}
         </span>
@@ -478,13 +477,11 @@ function FormField({
           value={cleanVal}
           onChange={(e) => onChange(prefix ? `${prefix}${e.target.value}` : e.target.value)}
           placeholder={placeholder}
-          className={`w-full rounded-xl border-2 bg-ink/60 py-3 text-cream outline-none transition placeholder:text-cream/25 ${
-            prefix ? "pl-9 pr-4" : "px-4"
-          } ${
-            error
+          className={`w-full rounded-xl border-2 bg-ink/60 py-3 text-cream outline-none transition placeholder:text-cream/25 ${prefix ? "pl-9 pr-4" : "px-4"
+            } ${error
               ? "border-pink focus:border-pink"
               : "border-cream/20 focus:border-pink"
-          }`}
+            }`}
         />
       </div>
 
