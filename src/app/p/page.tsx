@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { builderClass } from "@/lib/builderClass";
 import { siteUrl } from "@/lib/siteUrl";
 
 type SP = Promise<{ [k: string]: string | string[] | undefined }>;
@@ -15,26 +14,28 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const sp = await searchParams;
   const n = one(sp.n) || "A Builder";
-  const s = one(sp.s) || "Full-stack";
+  const t = one(sp.t) || "Builder";
+  const g = one(sp.g);
+  const s = one(sp.s);
   const h = one(sp.h);
-  const title = builderClass(s, n);
+  const title = t;
 
   // Absolute: X/Slack scrapers need a fully-qualified image URL, and this
   // page is the one they actually fetch.
-  const og = `${siteUrl()}/api/og?${new URLSearchParams({ n, s, h })}`;
+  const og = `${siteUrl()}/api/og?${new URLSearchParams({ n, t, g, s, h })}`;
 
   return {
     title: `${n} — Builder Pass · HH Goa 2026`,
-    description: `${n} is a ${title} at Hacker House Goa 2026. Build. Ship. Sunset.`,
+    description: `${n} is a ${title} at Hacker House Goa 2026. Build. Ship. Ascend.`,
     openGraph: {
       title: `${n} — ${title}`,
-      description: "Hacker House Goa 2026 · Build. Ship. Sunset.",
+      description: "Hacker House Goa 2026 · Build. Ship. Ascend.",
       images: [{ url: og, width: 1200, height: 630 }],
     },
     twitter: {
       card: "summary_large_image",
       title: `${n} — ${title}`,
-      description: "Hacker House Goa 2026 · Build. Ship. Sunset.",
+      description: "Hacker House Goa 2026 · Build. Ship. Ascend.",
       images: [og],
     },
   };
@@ -47,14 +48,16 @@ export default async function PassPermalink({
 }) {
   const sp = await searchParams;
   const n = one(sp.n) || "A Builder";
-  const s = one(sp.s) || "Full-stack";
+  const t = one(sp.t) || "Builder";
+  const g = one(sp.g);
+  const s = one(sp.s);
   const h = one(sp.h);
-  const title = builderClass(s, n);
-  const og = `/api/og?${new URLSearchParams({ n, s, h })}`;
+  const title = t;
+  const og = `/api/og?${new URLSearchParams({ n, t, g, s, h })}`;
 
   const tweet = `https://x.com/intent/tweet?text=${encodeURIComponent(
-    `Just minted my Builder Pass for Hacker House Goa 2026 🌅\n\n${n} — ${title}\n\nBuild. Ship. Sunset. #FrameInGoa`,
-  )}&url=${encodeURIComponent(`${siteUrl()}/p?${new URLSearchParams({ n, s, h })}`)}`;
+    `Just minted my Builder Pass for Hacker House Goa 2026 🌅\n\n${n} — ${title}\n\nBuild. Ship. Ascend. #FrameInGoa`,
+  )}&url=${encodeURIComponent(`${siteUrl()}/p?${new URLSearchParams({ n, t, g, s, h })}`)}`;
 
   return (
     <main className="flex min-h-dvh flex-col items-center justify-center gap-9 bg-ink px-6 py-16 text-center">
@@ -68,7 +71,7 @@ export default async function PassPermalink({
       <div>
         <h1 className="display text-4xl text-cream sm:text-5xl">{n}</h1>
         <p className="mt-3 text-cream/70">
-          {title} · {s}
+          {[title, s, g].filter(Boolean).join(" · ")}
           {h && ` · @${h}`}
         </p>
       </div>

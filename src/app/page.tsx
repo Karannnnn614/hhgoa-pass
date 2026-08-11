@@ -9,11 +9,9 @@ import ScaledCard from "@/components/ScaledCard";
 import { HouseMark, WaveMark } from "@/components/marks";
 import { intake, type Photo } from "@/lib/photo";
 import { download, slugify, toPng } from "@/lib/render";
-import { builderClass } from "@/lib/builderClass";
-import { makeQr, permalinkFor } from "@/lib/qr";
 
 const SHARE_TEXT = (name: string, title: string) =>
-  `Just minted my Builder Pass for Hacker House Goa 2026 🌅\n\n${name} — ${title}\n\nBuild. Ship. Sunset. #FrameInGoa`;
+  `Just minted my Builder Pass for Hacker House Goa 2026 🌅\n\n${name} — ${title}\n\nBuild. Ship. Ascend. #FrameInGoa`;
 
 export default function Home() {
   const [photo, setPhoto] = useState<Photo | null>(null);
@@ -23,8 +21,10 @@ export default function Home() {
   const [downloading, setDownloading] = useState(false);
   const [data, setData] = useState<PassData>({
     name: "",
-    stack: "",
+    title: "",
+    team: "",
     handle: "",
+    stack: "",
     photo: null,
     transform: { x: 0, y: 0, zoom: 1 },
   });
@@ -32,26 +32,6 @@ export default function Home() {
   const cardRef = useRef<HTMLDivElement>(null);
   const resultRef = useRef<HTMLDivElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
-
-  // QR regenerates whenever the identity fields change (debounced).
-  useEffect(() => {
-    if (!photo) return;
-    const t = setTimeout(async () => {
-      try {
-        const qr = await makeQr(
-          permalinkFor(window.location.origin, {
-            name: data.name,
-            stack: data.stack,
-            handle: data.handle,
-          }),
-        );
-        setData((d) => (d.qr === qr ? d : { ...d, qr }));
-      } catch {
-        /* QR is decorative if it fails; the card still renders */
-      }
-    }, 350);
-    return () => clearTimeout(t);
-  }, [photo, data.name, data.stack, data.handle]);
 
   const handleFile = useCallback(async (file: File) => {
     setError("");
@@ -96,16 +76,17 @@ export default function Home() {
   };
 
   const onShare = () => {
-    const title = builderClass(data.stack, data.name);
     const name = data.name.trim() || "A builder";
     const params = new URLSearchParams({
       n: data.name.trim(),
-      s: data.stack.trim(),
+      t: data.title.trim(),
+      g: data.team.trim(),
       h: data.handle.trim().replace(/^@/, ""),
+      s: data.stack.trim(),
     });
     const permalink = `${window.location.origin}/p?${params}`;
     const url = `https://x.com/intent/tweet?text=${encodeURIComponent(
-      SHARE_TEXT(name, title),
+      SHARE_TEXT(name, data.title.trim() || "Builder"),
     )}&url=${encodeURIComponent(permalink)}`;
     window.open(url, "_blank", "noopener");
   };
@@ -226,7 +207,7 @@ export default function Home() {
               <div>
                 <h2 className="display text-3xl text-cream">Your details</h2>
                 <p className="mt-2 text-sm text-cream/60">
-                  Three fields. Your class is generated from your stack.
+                  Only your name is required. Your Builder ID is generated.
                 </p>
               </div>
 
@@ -234,22 +215,36 @@ export default function Home() {
                 label="Name"
                 value={data.name}
                 onChange={(v) => setData((d) => ({ ...d, name: v }))}
-                placeholder="Bhavya Madan"
+                placeholder="Bhavya Pratap Singh"
+                maxLength={26}
+              />
+              <Field
+                label="Title"
+                value={data.title}
+                onChange={(v) => setData((d) => ({ ...d, title: v }))}
+                placeholder="Builder"
                 maxLength={24}
               />
               <Field
-                label="Stack / Role"
-                value={data.stack}
-                onChange={(v) => setData((d) => ({ ...d, stack: v }))}
-                placeholder="React · Rust · AI"
-                maxLength={40}
+                label="Team name"
+                value={data.team}
+                onChange={(v) => setData((d) => ({ ...d, team: v }))}
+                placeholder="Team Susegad"
+                maxLength={22}
               />
               <Field
-                label="X handle"
+                label="X username"
                 value={data.handle}
                 onChange={(v) => setData((d) => ({ ...d, handle: v }))}
                 placeholder="@yourhandle"
                 maxLength={20}
+              />
+              <Field
+                label="Stack (optional)"
+                value={data.stack}
+                onChange={(v) => setData((d) => ({ ...d, stack: v }))}
+                placeholder="React, Node, Rust"
+                maxLength={34}
               />
 
               <PhotoTools

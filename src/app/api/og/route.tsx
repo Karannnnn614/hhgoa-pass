@@ -15,7 +15,9 @@ export const runtime = "nodejs";
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const name = (searchParams.get("n") || "A Builder").slice(0, 26);
-  const stack = (searchParams.get("s") || "Full-stack").slice(0, 40);
+  const title = (searchParams.get("t") || "Builder").slice(0, 24);
+  const team = (searchParams.get("g") || "").slice(0, 22);
+  const stack = (searchParams.get("s") || "").slice(0, 34);
   const handle = (searchParams.get("h") || "").slice(0, 20).replace(/^@/, "");
   const id = builderId(name, handle);
 
@@ -27,7 +29,9 @@ export async function GET(req: Request) {
   if (longest > 12) nameSize = 54;
   else if (longest > 9) nameSize = 66;
 
-  const details = [stack, handle ? `@${handle}` : ""].filter(Boolean).join("  ·  ");
+  const details = [title, stack, handle ? `@${handle}` : ""]
+    .filter(Boolean)
+    .join("  ·  ");
 
   /* Badge geometry: the plate scaled down to fit the preview's left panel.
      K converts plate pixels -> preview pixels so the text lands in the same
@@ -142,12 +146,12 @@ export async function GET(req: Request) {
               {initials}
             </div>
 
-            {/* name on the badge */}
+            {/* name + title, in the open area above the box */}
             <div
               style={{
                 position: "absolute",
-                left: 62 * K,
-                top: 980 * K,
+                left: 78 * K,
+                top: 1060 * K,
                 display: "flex",
                 flexDirection: "column",
                 fontSize: badgeName,
@@ -159,33 +163,61 @@ export async function GET(req: Request) {
               <span>{line1.toUpperCase()}</span>
               {line2 && <span>{line2.toUpperCase()}</span>}
             </div>
-
-            {/* builder id + dates on the badge */}
             <div
               style={{
                 position: "absolute",
-                left: 175 * K,
-                top: 1305 * K,
-                fontSize: 34 * K,
+                left: 78 * K,
+                top: 1210 * K,
+                fontSize: 30 * K,
                 fontWeight: 700,
                 color: "#F2762F",
                 display: "flex",
               }}
             >
-              {id}
+              {[title, stack].filter(Boolean).join("  ·  ")}
             </div>
+
+            {/* bottom box: team name + X username */}
             <div
               style={{
                 position: "absolute",
-                left: 175 * K,
-                top: 1418 * K,
+                left: 170 * K,
+                top: 1306 * K,
                 fontSize: 32 * K,
                 fontWeight: 700,
                 color: "#F2EDE3",
                 display: "flex",
               }}
             >
-              28 OCT – 31 OCT 2026
+              {team || "—"}
+            </div>
+            <div
+              style={{
+                position: "absolute",
+                left: 170 * K,
+                top: 1402 * K,
+                fontSize: 32 * K,
+                fontWeight: 700,
+                color: "#F2EDE3",
+                display: "flex",
+              }}
+            >
+              {handle ? `@${handle}` : "—"}
+            </div>
+
+            {/* builder id, right side of the box */}
+            <div
+              style={{
+                position: "absolute",
+                right: 96 * K,
+                top: 1306 * K,
+                fontSize: 30 * K,
+                fontWeight: 700,
+                color: "#F2762F",
+                display: "flex",
+              }}
+            >
+              {id}
             </div>
           </div>
         </div>
