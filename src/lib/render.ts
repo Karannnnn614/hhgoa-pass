@@ -1,7 +1,9 @@
 /** Rasterise the live card DOM to a PNG blob. Client-only. */
 
-const W = 1200;
-const H = 1500;
+import { CARD_H, CARD_W } from "@/components/PassCard";
+
+const W = CARD_W;
+const H = CARD_H;
 
 export async function toPng(node: HTMLElement): Promise<Blob> {
   // Lazy: the rasteriser is only fetched once someone actually has a card.

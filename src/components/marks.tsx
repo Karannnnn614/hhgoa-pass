@@ -1,124 +1,162 @@
-/* Line-art marks drawn to match the event identity: single-stroke,
-   pink/orange, no fills. Used on the card and the hero. */
+/* Line-art marks matched to the reference badge: single-stroke, pink/orange,
+   no fills. Every mark takes className + style so it can be absolutely
+   positioned on the card. */
 
-export function HouseMark({ className = "" }: { className?: string }) {
+type MarkProps = { className?: string; style?: React.CSSProperties };
+
+export function HouseMark({ className = "", style }: MarkProps) {
   return (
-    <svg viewBox="0 0 64 56" fill="none" className={className} aria-hidden>
-      {/* sun rising behind the roof */}
-      <circle cx="46" cy="18" r="10" stroke="#F5A03C" strokeWidth="1.7" />
+    <svg
+      viewBox="0 0 120 106"
+      fill="none"
+      className={className}
+      style={style}
+      aria-hidden
+    >
+      {/* sun arc rising behind the roof, right */}
+      <path
+        d="M74 44a26 26 0 0 1 44-18"
+        stroke="#F2762F"
+        strokeWidth="3"
+        strokeLinecap="round"
+      />
 
       {/* palm, left */}
-      <path d="M11 50V27" stroke="#E8336E" strokeWidth="1.8" strokeLinecap="round" />
       <path
-        d="M11 27c-6-5-9-3-10 1M11 27c6-5 9-3 10 1M11 27c-3-6 0-9 3-10M11 27c3-5 7-5 10-3"
+        d="M22 96V34"
         stroke="#E8336E"
-        strokeWidth="1.8"
+        strokeWidth="3"
+        strokeLinecap="round"
+      />
+      <path
+        d="M22 34C13 24 5 25 1 31M22 34c9-10 17-9 21-3M22 34c-4-12 1-19 8-22M22 34c6-10 15-11 22-6"
+        stroke="#E8336E"
+        strokeWidth="3"
         strokeLinecap="round"
       />
 
-      {/* Goan house: wide body, tiled roof, arched openings */}
+      {/* Goan house: wide body, low pitched roof, arcade of arches */}
       <path
-        d="M18 50V29l16-9 16 9v21"
-        stroke="#F5A03C"
-        strokeWidth="1.8"
+        d="M34 96V50l32-22 32 22v46"
+        stroke="#E8336E"
+        strokeWidth="3"
         strokeLinejoin="round"
       />
-      {/* roof eave line */}
+      {/* roof overhang */}
       <path
-        d="M15 30l19-11 19 11"
-        stroke="#F5A03C"
-        strokeWidth="1.8"
+        d="M28 52 66 25l38 27"
+        stroke="#E8336E"
+        strokeWidth="3"
+        strokeLinecap="round"
         strokeLinejoin="round"
+      />
+      {/* ground line */}
+      <path
+        d="M24 96h84"
+        stroke="#E8336E"
+        strokeWidth="3"
         strokeLinecap="round"
       />
-      {/* ground */}
-      <path d="M12 50h44" stroke="#F5A03C" strokeWidth="1.8" strokeLinecap="round" />
-      {/* arched doorway */}
+      {/* arcade: three arched openings */}
       <path
-        d="M30 50v-9a4 4 0 0 1 8 0v9"
+        d="M44 96V72a7 7 0 0 1 14 0v24M60 96V72a7 7 0 0 1 14 0v24M76 96V72a7 7 0 0 1 14 0v24"
         stroke="#E8336E"
-        strokeWidth="1.7"
+        strokeWidth="2.6"
         strokeLinejoin="round"
       />
-      {/* arched windows */}
+      {/* roof detail ticks */}
       <path
-        d="M22 40v-4a2.5 2.5 0 0 1 5 0v4ZM41 40v-4a2.5 2.5 0 0 1 5 0v4Z"
+        d="M46 46l4-4M58 42l4-4M70 42l4-4M82 46l4-4"
         stroke="#E8336E"
-        strokeWidth="1.5"
-        strokeLinejoin="round"
-      />
-      {/* roof tile ticks */}
-      <path
-        d="M24 26l2-2M30 24l2-2M36 24l2-2M42 26l2-2"
-        stroke="#E8336E"
-        strokeWidth="1.3"
+        strokeWidth="2.4"
         strokeLinecap="round"
       />
     </svg>
   );
 }
 
-export function SunsetSeal({
-  className = "",
-  style,
-}: {
-  className?: string;
-  style?: React.CSSProperties;
-}) {
+export function SunsetSeal({ className = "", style }: MarkProps) {
   return (
-    <svg viewBox="0 0 96 96" fill="none" className={className} style={style} aria-hidden>
-      <circle cx="48" cy="48" r="45" stroke="#F5E9CF" strokeWidth="1.2" opacity="0.55" />
+    <svg
+      viewBox="0 0 100 100"
+      fill="none"
+      className={className}
+      style={style}
+      aria-hidden
+    >
+      <circle cx="50" cy="50" r="47" stroke="#F2EDE3" strokeWidth="1.6" />
       <defs>
-        {/* top arc reads left-to-right across the top */}
-        <path id="sealTop" d="M11 48a37 37 0 0 1 74 0" fill="none" />
-        {/* bottom arc: swept counter-clockwise so glyphs sit upright */}
-        <path id="sealBottom" d="M11 48a37 37 0 0 0 74 0" fill="none" />
+        <path id="sealTop" d="M12 50a38 38 0 0 1 76 0" fill="none" />
+        {/* counter-clockwise so the bottom text stays upright */}
+        <path id="sealBottom" d="M12 50a38 38 0 0 0 76 0" fill="none" />
       </defs>
-      <text fill="#F5E9CF" fontSize="10" fontWeight="700" letterSpacing="2.6">
+      <text fill="#F2EDE3" fontSize="11" fontWeight="700" letterSpacing="3">
         <textPath href="#sealTop" startOffset="50%" textAnchor="middle">
           BUILD · SHIP
         </textPath>
       </text>
-      <text fill="#F5E9CF" fontSize="10" fontWeight="700" letterSpacing="2.6">
+      <text fill="#F2EDE3" fontSize="11" fontWeight="700" letterSpacing="3">
         <textPath href="#sealBottom" startOffset="50%" textAnchor="middle">
           · SUNSET ·
         </textPath>
       </text>
-      {/* little sun */}
-      <circle cx="48" cy="50" r="8" stroke="#F5A03C" strokeWidth="1.6" />
+      {/* sun over a horizon, centre */}
+      <circle cx="50" cy="49" r="9" stroke="#F2762F" strokeWidth="2" />
       <path
-        d="M48 36v-5M48 69v5M34 50h-5M67 50h5M38 40l-3.5-3.5M58 40l3.5-3.5"
-        stroke="#F5A03C"
-        strokeWidth="1.5"
+        d="M36 60h28"
+        stroke="#F2762F"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+      <path
+        d="M50 33v-6M50 71v-4M33 49h-6M67 49h6M38 37l-4-4M62 37l4-4"
+        stroke="#F2762F"
+        strokeWidth="1.9"
         strokeLinecap="round"
       />
     </svg>
   );
 }
 
-export function PalmMark({
-  className = "",
-  style,
-}: {
-  className?: string;
-  style?: React.CSSProperties;
-}) {
+export function PalmMark({ className = "", style }: MarkProps) {
   return (
-    <svg viewBox="0 0 40 56" fill="none" className={className} style={style} aria-hidden>
-      <path d="M20 54V20" stroke="#F5A03C" strokeWidth="1.6" strokeLinecap="round" />
+    <svg
+      viewBox="0 0 80 110"
+      fill="none"
+      className={className}
+      style={style}
+      aria-hidden
+    >
+      {/* curved trunk */}
       <path
-        d="M20 20c-7-6-13-4-16 0M20 20c7-6 13-4 16 0M20 20c-3-7 0-11 4-13M20 20c3-6 8-7 12-5"
-        stroke="#F5A03C"
-        strokeWidth="1.6"
+        d="M42 108C40 78 36 56 30 38"
+        stroke="#F2762F"
+        strokeWidth="2.6"
         strokeLinecap="round"
       />
+      {/* fronds */}
+      <path
+        d="M30 38C18 24 8 24 2 32M30 38c10-16 22-18 30-10M30 38c-6-16-2-26 6-32M30 38c12-10 24-8 30 0M30 38c-14-4-22 2-26 12"
+        stroke="#F2762F"
+        strokeWidth="2.6"
+        strokeLinecap="round"
+      />
+      {/* coconuts */}
+      <circle cx="34" cy="42" r="3" fill="#F2762F" />
+      <circle cx="26" cy="44" r="2.6" fill="#F2762F" />
     </svg>
   );
 }
 
-export function WaveMark({ className = "" }: { className?: string }) {
+export function WaveMark({ className = "", style }: MarkProps) {
   return (
-    <svg viewBox="0 0 120 24" fill="none" className={className} aria-hidden>
+    <svg
+      viewBox="0 0 120 24"
+      fill="none"
+      className={className}
+      style={style}
+      aria-hidden
+    >
       <path
         d="M0 12c10-10 20 10 30 0s20 10 30 0 20 10 30 0 20 10 30 0"
         stroke="#E8336E"
@@ -129,23 +167,35 @@ export function WaveMark({ className = "" }: { className?: string }) {
   );
 }
 
-export function PersonIcon({ className = "" }: { className?: string }) {
+export function PersonIcon({ className = "", style }: MarkProps) {
   return (
-    <svg viewBox="0 0 24 24" fill="none" className={className} aria-hidden>
-      <circle cx="12" cy="8" r="4" stroke="#E8336E" strokeWidth="1.8" />
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      className={className}
+      style={style}
+      aria-hidden
+    >
+      <circle cx="12" cy="8" r="4" stroke="#E8336E" strokeWidth="1.7" />
       <path
-        d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"
+        d="M4.5 21c0-4.2 3.4-6.6 7.5-6.6s7.5 2.4 7.5 6.6"
         stroke="#E8336E"
-        strokeWidth="1.8"
+        strokeWidth="1.7"
         strokeLinecap="round"
       />
     </svg>
   );
 }
 
-export function CalendarIcon({ className = "" }: { className?: string }) {
+export function CalendarIcon({ className = "", style }: MarkProps) {
   return (
-    <svg viewBox="0 0 24 24" fill="none" className={className} aria-hidden>
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      className={className}
+      style={style}
+      aria-hidden
+    >
       <rect
         x="3"
         y="5"
@@ -153,12 +203,12 @@ export function CalendarIcon({ className = "" }: { className?: string }) {
         height="16"
         rx="2.5"
         stroke="#E8336E"
-        strokeWidth="1.8"
+        strokeWidth="1.7"
       />
       <path
         d="M3 10h18M8 3v4M16 3v4"
         stroke="#E8336E"
-        strokeWidth="1.8"
+        strokeWidth="1.7"
         strokeLinecap="round"
       />
       <path
@@ -171,41 +221,53 @@ export function CalendarIcon({ className = "" }: { className?: string }) {
   );
 }
 
-export function BirdMark({
-  className = "",
-  style,
-}: {
-  className?: string;
-  style?: React.CSSProperties;
-}) {
+export function BirdMark({ className = "", style }: MarkProps) {
   return (
-    <svg viewBox="0 0 40 16" fill="none" className={className} style={style} aria-hidden>
+    <svg
+      viewBox="0 0 40 16"
+      fill="none"
+      className={className}
+      style={style}
+      aria-hidden
+    >
       <path
-        d="M2 10c5 0 6-6 9-6s4 6 9 6"
+        d="M2 11c6 0 7-8 11-8s5 8 11 8"
         stroke="#E8336E"
-        strokeWidth="1.8"
+        strokeWidth="2"
         strokeLinecap="round"
       />
     </svg>
   );
 }
 
-export function HHLogo({ className = "" }: { className?: string }) {
+/** The H'H monogram in the footer: orange H, pink slash, orange H. */
+export function HHLogo({ className = "", style }: MarkProps) {
   return (
-    <svg viewBox="0 0 46 26" fill="none" className={className} aria-hidden>
+    <svg
+      viewBox="0 0 76 42"
+      fill="none"
+      className={className}
+      style={style}
+      aria-hidden
+    >
       <path
-        d="M3 3v20M3 13h11M14 3v20"
-        stroke="#F5A03C"
-        strokeWidth="2.6"
+        d="M4 4v34M4 21h22M26 4v34"
+        stroke="#F2762F"
+        strokeWidth="5"
         strokeLinecap="round"
       />
       <path
-        d="M25 3v20M25 13h11M36 3v20"
+        d="M48 4v34M48 21h22M70 4v34"
+        stroke="#F2762F"
+        strokeWidth="5"
+        strokeLinecap="round"
+      />
+      <path
+        d="M40 2l-6 38"
         stroke="#E8336E"
-        strokeWidth="2.6"
+        strokeWidth="5"
         strokeLinecap="round"
       />
-      <path d="M20 2l-2 22" stroke="#F5E9CF" strokeWidth="1.6" strokeLinecap="round" />
     </svg>
   );
 }

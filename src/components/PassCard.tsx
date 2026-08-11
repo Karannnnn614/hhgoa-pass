@@ -21,13 +21,14 @@ export type PassData = {
   handle: string;
   photo: Photo | null;
   transform: Transform;
-  qr?: string; // data-url, generated async
+  qr?: string;
 };
 
-/**
- * Splits a name across the design's two stacked lines. A single-word name
- * stays on one line — never pad it with a placeholder second line.
- */
+/* Card is authored at 1000x1500 (2:3, matching the reference badge) and
+   exported at 2x. Every coordinate below is measured off the reference. */
+export const CARD_W = 1000;
+export const CARD_H = 1500;
+
 function splitName(full: string): [string, string | null] {
   const parts = full.trim().split(/\s+/).filter(Boolean);
   if (parts.length === 0) return ["YOUR", "NAME"];
@@ -45,7 +46,6 @@ const PassCard = forwardRef<
   const handle = data.handle.trim().replace(/^@/, "");
   const id = builderId(raw, stack);
 
-  // Role line: mockup shows "Builder • Developer • AI/ML"
   const roleParts = stack
     .split(/[·•,|]/)
     .map((s) => s.trim())
@@ -53,121 +53,140 @@ const PassCard = forwardRef<
   const roles = handle ? [...roleParts, `@${handle}`] : roleParts;
 
   const longest = Math.max(line1.length, line2?.length ?? 0);
-  const nameSize = longest > 11 ? 84 : longest > 8 ? 100 : 118;
+  let nameSize = 92;
+  if (longest > 11) nameSize = 74;
+  else if (longest > 8) nameSize = 84;
+  const roleSize = roles.join(" • ").length > 34 ? 24 : 27;
 
   return (
     <div
       ref={ref}
       data-card
-      style={{ width: 1200, height: 1500, background: "#0B2420" }}
+      style={{ width: CARD_W, height: CARD_H, background: "#0A2622" }}
       className="relative overflow-hidden font-sans"
     >
-      {/* ================= BACKGROUND ================= */}
+      {/* ============ GROUND ============ */}
       <div
         className="absolute inset-0"
-        style={{
-          background:
-            "linear-gradient(172deg,#0C2723 0%,#0B2420 55%,#081D1A 100%)",
-        }}
+        style={{ background: "#0A2622" }}
       />
 
-      {/* teal cut-paper waves behind the photo */}
+      {/* teal cut-paper waves, upper-left behind the photo */}
       <svg
-        viewBox="0 0 1200 1500"
+        viewBox="0 0 1000 1500"
         className="absolute inset-0 h-full w-full"
         preserveAspectRatio="none"
         aria-hidden
       >
-        {/* upper teal band */}
+        {/* pale teal sweep */}
         <path
-          d="M96 430c70-36 150 10 210 44 90 50 150 96 128 150-20 50-120 58-210 34-96-26-160-70-166-130-4-44 12-76 38-98Z"
-          fill="#1B5E63"
-          opacity="0.55"
+          d="M0 330c90-26 150 18 196 66 44 46 60 104 30 150-32 48-120 60-226 40V330Z"
+          fill="#2E7C82"
+          opacity="0.62"
         />
-        {/* broad mid wave */}
+        {/* deeper teal band under it */}
         <path
-          d="M0 640c150-60 260 30 420 40 180 12 300-70 470-52 130 14 230 70 310 56v816H0Z"
-          fill="#0E2C28"
+          d="M0 400c86-14 150 34 190 84 40 48 44 104 6 146-40 44-112 52-196 34V400Z"
+          fill="#17565C"
+          opacity="0.85"
+        />
+        {/* broad dark wave sweeping right, under the sun */}
+        <path
+          d="M0 690c120-64 230-6 340 22 120 30 220-40 330-66 96-22 200-6 330 30v824H0V690Z"
+          fill="#093F3A"
+          opacity="0.62"
         />
         <path
-          d="M0 700c170-56 280 40 450 44 190 4 300-72 470-50 120 16 210 64 280 52v754H0Z"
-          fill="#0A211E"
+          d="M0 760c130-56 240 10 356 34 126 26 226-42 336-60 92-16 190 0 308 26v740H0V760Z"
+          fill="#07302C"
+          opacity="0.7"
         />
       </svg>
 
-      {/* sunset disc */}
+      {/* ---- sunset disc, right of the photo ---- */}
       <div
         className="absolute"
         style={{
-          left: 636,
-          top: 470,
-          width: 190,
-          height: 190,
+          left: 606,
+          top: 486,
+          width: 196,
+          height: 196,
           borderRadius: "50%",
-          background: "linear-gradient(180deg,#F5842C 0%,#F0682F 100%)",
+          background: "#F2762F",
         }}
       />
-      {/* coral hill under the sun */}
+      {/* coral dune crossing under the sun */}
       <svg
         className="absolute"
-        style={{ left: 560, top: 600, width: 420, height: 120 }}
-        viewBox="0 0 420 120"
+        style={{ left: 470, top: 570, width: 420, height: 130 }}
+        viewBox="0 0 420 130"
         fill="none"
         aria-hidden
       >
         <path
-          d="M0 90c60-52 120-40 180-6 50 28 110 30 160 4 30-16 60-18 80-8v40H0V90Z"
-          fill="#E8593C"
-          opacity="0.9"
+          d="M0 116c46-56 96-74 150-52 40 16 74 6 104-22 26-24 56-30 90-18l76 30v76H0v-14Z"
+          fill="#E8563C"
         />
       </svg>
 
       {/* birds */}
-      <BirdMark className="absolute" style={{ left: 640, top: 452, width: 48 }} />
-      <BirdMark className="absolute" style={{ left: 700, top: 430, width: 34 }} />
-
-      {/* palm right of the sun */}
-      <PalmMark
+      <BirdMark
         className="absolute"
-        style={{ left: 900, top: 430, width: 150, height: 210 }}
+        style={{ left: 596, top: 404, width: 52 }}
+      />
+      <BirdMark
+        className="absolute"
+        style={{ left: 668, top: 428, width: 34 }}
       />
 
-      {/* ================= HEADER ================= */}
+      {/* palms behind, right */}
+      <PalmMark
+        className="absolute"
+        style={{ left: 806, top: 388, width: 168, height: 226 }}
+      />
+      <PalmMark
+        className="absolute"
+        style={{ left: 806, top: 508, width: 104, height: 140 }}
+      />
+
+      {/* ============ HEADER ============ */}
       {/* lanyard slot */}
       <div
         className="absolute"
         style={{
           left: "50%",
           transform: "translateX(-50%)",
-          top: 58,
-          width: 250,
-          height: 46,
+          top: 46,
+          width: 214,
+          height: 42,
           borderRadius: 999,
-          background: "#F3EDE4",
-          border: "3px solid #16332C",
+          border: "5px solid #F2EDE3",
         }}
       />
 
       <div
         className="absolute font-bold"
         style={{
-          right: 78,
-          top: 92,
+          right: 74,
+          top: 78,
           fontSize: 30,
-          letterSpacing: "0.18em",
-          color: "#F5A03C",
+          letterSpacing: "0.16em",
+          color: "#F2762F",
         }}
       >
         BUILDER
       </div>
 
       {/* logo lockup */}
-      <div className="absolute flex items-start gap-7" style={{ left: 84, top: 182 }}>
-        <HouseMark className="h-28 w-28" />
-        <div style={{ paddingTop: 4 }}>
+      <div
+        className="absolute flex items-start"
+        style={{ left: 118, top: 128, gap: 30 }}
+      >
+        <HouseMark style={{ width: 148, height: 130 }} />
+        <div style={{ paddingTop: 26 }}>
           <div
             className="display"
-            style={{ fontSize: 58, lineHeight: 0.9, color: "#F3EDE0" }}
+            style={{ fontSize: 58, lineHeight: 0.94, color: "#F2EDE3" }}
           >
             Hacker
             <br />
@@ -176,34 +195,37 @@ const PassCard = forwardRef<
           <div
             className="font-bold"
             style={{
-              marginTop: 12,
-              fontSize: 21,
-              letterSpacing: "0.16em",
+              marginTop: 14,
+              fontSize: 22,
+              letterSpacing: "0.1em",
               color: "#E8336E",
             }}
           >
-            GOA <span style={{ color: "#F5A03C" }}>·</span> INDIA{" "}
-            <span style={{ color: "#F5A03C" }}>·</span> 2026
+            GOA <span style={{ color: "#F2762F" }}>·</span> INDIA{" "}
+            <span style={{ color: "#F2762F" }}>·</span> 2026
           </div>
         </div>
       </div>
 
-      {/* small palm + seal, right */}
+      {/* tiny palm + seal, right */}
       <PalmMark
         className="absolute"
-        style={{ right: 88, top: 176, width: 34, height: 48 }}
+        style={{ right: 86, top: 128, width: 32, height: 46 }}
       />
-      <SunsetSeal className="absolute" style={{ right: 74, top: 258, width: 140, height: 140 }} />
+      <SunsetSeal
+        className="absolute"
+        style={{ right: 62, top: 226, width: 130, height: 130 }}
+      />
 
-      {/* ================= PHOTO ================= */}
-      <div className="absolute" style={{ left: 168, top: 420 }}>
+      {/* ============ PHOTO ============ */}
+      <div className="absolute" style={{ left: 146, top: 352 }}>
         <div
           className="relative rounded-full"
           style={{
-            width: 400,
-            height: 400,
-            padding: 4,
-            background: "#F5A03C",
+            width: 434,
+            height: 434,
+            padding: 3,
+            background: "#F2762F",
           }}
         >
           {data.photo ? (
@@ -222,37 +244,36 @@ const PassCard = forwardRef<
         </div>
       </div>
 
-      {/* ================= COCONUT ISLAND ================= */}
+      {/* ============ COCONUT ISLAND ============ */}
       <CoconutIsland
         className="absolute"
-        style={{ right: 58, top: 620, width: 470, height: 440 }}
+        style={{ left: 588, top: 664, width: 372, height: 348 }}
       />
 
-      {/* dotted path */}
+      {/* dotted path, sweeping left-to-right under the photo */}
       <svg
         className="absolute"
-        style={{ left: 90, top: 640, width: 1020, height: 400 }}
-        viewBox="0 0 1020 400"
+        style={{ left: 60, top: 620, width: 900, height: 470 }}
+        viewBox="0 0 900 470"
         fill="none"
         aria-hidden
       >
         <path
-          d="M18 40C60 150 180 190 300 210s260 30 340 90 180 70 340 30"
-          stroke="#F5A03C"
+          d="M42 30C22 120 60 190 150 214c96 26 210 6 300 60 84 50 130 128 240 146"
+          stroke="#F2762F"
           strokeWidth="5"
-          strokeDasharray="1 22"
+          strokeDasharray="0.5 24"
           strokeLinecap="round"
-          opacity="0.85"
         />
       </svg>
 
-      {/* ================= NAME =================
-          Bottom-anchored so one-line and two-line names both sit flush
-          above the credential box. */}
-      <div className="absolute" style={{ left: 84, right: 84, bottom: 424 }}>
+      {/* ============ NAME ============
+          Bottom-anchored to the credential box so one- and two-line names
+          both sit flush above it and can never overlap. */}
+      <div className="absolute" style={{ left: 120, right: 90, bottom: 372 }}>
         <div
           className="display"
-          style={{ fontSize: nameSize, lineHeight: 0.92, color: "#F3E4C4" }}
+          style={{ fontSize: nameSize, lineHeight: 0.98, color: "#F2E2BC" }}
         >
           {line1.toUpperCase()}
           {line2 && (
@@ -264,14 +285,12 @@ const PassCard = forwardRef<
         </div>
 
         <div
-          className="mt-6 flex flex-wrap items-center"
+          className="flex flex-wrap items-center"
           style={{
-            // shrink the role line as it gets longer so it never wraps
-            // into the credential box below
-            fontSize: roles.join(" • ").length > 34 ? 24 : 30,
-            color: "#F3EDE0",
+            marginTop: 22,
+            fontSize: roleSize,
+            color: "#F2EDE3",
             gap: 14,
-            maxWidth: 1032,
           }}
         >
           {roles.map((r, i) => (
@@ -283,57 +302,55 @@ const PassCard = forwardRef<
         </div>
       </div>
 
-      {/* ================= CREDENTIAL BOX ================= */}
+      {/* ============ CREDENTIAL BOX ============ */}
       <div
-        className="absolute rounded-[26px]"
+        className="absolute rounded-[22px]"
         style={{
-          left: 84,
-          right: 84,
-          top: 1180,
-          height: 216,
-          border: "2px solid rgba(243,237,224,0.28)",
+          left: 120,
+          right: 90,
+          top: 1160,
+          height: 218,
+          border: "1.5px solid rgba(242,237,227,0.34)",
         }}
       >
-        <div className="flex h-full items-center justify-between px-10">
-          <div className="flex flex-col justify-center" style={{ gap: 26 }}>
-            <div className="flex items-center" style={{ gap: 18 }}>
-              <PersonIcon className="h-9 w-9 shrink-0" />
+        <div className="flex h-full items-center justify-between px-9">
+          <div className="flex flex-col justify-center" style={{ gap: 30 }}>
+            <div className="flex items-center" style={{ gap: 20 }}>
+              <PersonIcon style={{ width: 38, height: 38, flexShrink: 0 }} />
               <div>
                 <div
                   style={{
-                    fontSize: 20,
-                    letterSpacing: "0.14em",
-                    color: "#F3EDE0",
-                    opacity: 0.9,
+                    fontSize: 21,
+                    letterSpacing: "0.06em",
+                    color: "#F2EDE3",
                   }}
                 >
                   BUILDER ID
                 </div>
                 <div
                   className="font-bold"
-                  style={{ fontSize: 30, color: "#F5A03C", marginTop: 4 }}
+                  style={{ fontSize: 29, color: "#F2762F", marginTop: 6 }}
                 >
                   {id}
                 </div>
               </div>
             </div>
 
-            <div className="flex items-center" style={{ gap: 18 }}>
-              <CalendarIcon className="h-9 w-9 shrink-0" />
+            <div className="flex items-center" style={{ gap: 20 }}>
+              <CalendarIcon style={{ width: 38, height: 38, flexShrink: 0 }} />
               <div>
                 <div
                   style={{
-                    fontSize: 20,
-                    letterSpacing: "0.14em",
-                    color: "#F3EDE0",
-                    opacity: 0.9,
+                    fontSize: 21,
+                    letterSpacing: "0.06em",
+                    color: "#F2EDE3",
                   }}
                 >
                   EVENT DATES
                 </div>
                 <div
                   className="font-bold"
-                  style={{ fontSize: 28, color: "#F3EDE0", marginTop: 4 }}
+                  style={{ fontSize: 27, color: "#F2EDE3", marginTop: 6 }}
                 >
                   28 OCT – 31 OCT 2026
                 </div>
@@ -341,37 +358,31 @@ const PassCard = forwardRef<
             </div>
           </div>
 
-          {/* QR */}
           <div
-            className="flex items-center justify-center rounded-xl"
-            style={{ width: 168, height: 168, background: "#F3E4C4" }}
+            className="flex items-center justify-center"
+            style={{ width: 172, height: 172 }}
           >
             {data.qr ? (
               // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={data.qr}
-                alt=""
-                style={{ width: 156, height: 156 }}
-              />
+              <img src={data.qr} alt="" style={{ width: 172, height: 172 }} />
             ) : null}
           </div>
         </div>
       </div>
 
-      {/* ================= FOOTER ================= */}
+      {/* ============ FOOTER ============ */}
       <div
         className="absolute flex items-center justify-between"
-        style={{ left: 84, right: 84, bottom: 44 }}
+        style={{ left: 120, right: 90, bottom: 52 }}
       >
-        <div className="flex items-center" style={{ gap: 16 }}>
-          <HHLogo className="h-11 w-20" />
+        <div className="flex items-center" style={{ gap: 18 }}>
+          <HHLogo style={{ width: 76, height: 42 }} />
           <span
             className="font-bold"
             style={{
-              fontSize: 22,
-              letterSpacing: "0.18em",
-              color: "#F3EDE0",
-              opacity: 0.85,
+              fontSize: 23,
+              letterSpacing: "0.1em",
+              color: "#F2EDE3",
             }}
           >
             GOA 2026
@@ -379,11 +390,11 @@ const PassCard = forwardRef<
         </div>
         <div
           className="font-bold"
-          style={{ fontSize: 22, letterSpacing: "0.12em" }}
+          style={{ fontSize: 23, letterSpacing: "0.06em" }}
         >
-          <span style={{ color: "#F3EDE0" }}>CODE. BUILD. </span>
-          <span style={{ color: "#F5A03C" }}>SUNSET. </span>
-          <span style={{ color: "#F3EDE0" }}>REPEAT.</span>
+          <span style={{ color: "#F2EDE3" }}>CODE. BUILD. </span>
+          <span style={{ color: "#F2762F" }}>SUNSET. </span>
+          <span style={{ color: "#F2EDE3" }}>REPEAT.</span>
         </div>
       </div>
     </div>

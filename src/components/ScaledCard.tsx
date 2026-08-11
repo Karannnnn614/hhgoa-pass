@@ -1,12 +1,12 @@
 "use client";
 
 import { forwardRef, useEffect, useRef, useState } from "react";
-import PassCard, { type PassData } from "./PassCard";
+import PassCard, { CARD_H, CARD_W, type PassData } from "./PassCard";
 import type { Transform } from "./PhotoSlot";
 
 /**
- * Renders the card at true export size (1200x1500) and CSS-scales it to fit
- * the available width. The rasteriser then sees export-resolution DOM.
+ * Renders the card at true export size and CSS-scales it to fit the
+ * available width, so the rasteriser always sees export-resolution DOM.
  */
 const ScaledCard = forwardRef<
   HTMLDivElement,
@@ -18,7 +18,7 @@ const ScaledCard = forwardRef<
   useEffect(() => {
     const el = box.current;
     if (!el) return;
-    const fit = () => setScale(el.clientWidth / 1200);
+    const fit = () => setScale(el.clientWidth / CARD_W);
     fit();
     const ro = new ResizeObserver(fit);
     ro.observe(el);
@@ -29,15 +29,15 @@ const ScaledCard = forwardRef<
     <div
       ref={box}
       className="card-in sheen relative overflow-hidden rounded-[28px] shadow-2xl shadow-black/60"
-      style={{ aspectRatio: "1200 / 1500" }}
+      style={{ aspectRatio: `${CARD_W} / ${CARD_H}` }}
     >
       <div
         style={{
           position: "absolute",
           top: 0,
           left: 0,
-          width: 1200,
-          height: 1500,
+          width: CARD_W,
+          height: CARD_H,
           transform: `scale(${scale})`,
           transformOrigin: "top left",
           visibility: scale ? "visible" : "hidden",

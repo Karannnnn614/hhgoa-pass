@@ -1,185 +1,198 @@
 /**
- * The signature motif from the pass design: a builder with a laptop sitting
- * on a tiny island inside a split coconut, under a leaf umbrella.
- * Single-stroke orange line-art, no fills except the water/sand.
+ * The signature motif: a builder with a laptop on a tiny island inside a
+ * split coconut, under a big leaf umbrella. Matched to the reference badge —
+ * orange single-stroke line-art with a teal lagoon and sand fill.
  */
 export default function CoconutIsland({
   className = "",
   style,
-}: {
-  className?: string;
-  style?: React.CSSProperties;
-}) {
-  const O = "#F5A03C";
+}: Readonly<{ className?: string; style?: React.CSSProperties }>) {
+  const O = "#F2762F";
   return (
     <svg
-      viewBox="0 0 320 300"
+      viewBox="0 0 380 356"
       fill="none"
       className={className}
       style={style}
       aria-hidden
     >
-      {/* ---- coconut shell: deep hemisphere ---- */}
+      {/* ---------- leaf umbrella, arcing in from upper right ---------- */}
       <path
-        d="M52 158a108 108 0 0 0 216 0Z"
+        d="M232 128c22-58 74-84 128-64-18 4-30 12-38 24 16-2 30 2 42 12-24-2-42 4-54 18 12 4 20 12 24 24-30-16-70-18-102-14Z"
         stroke={O}
-        strokeWidth="3.4"
+        strokeWidth="2.6"
         strokeLinejoin="round"
       />
-      {/* shell rim ellipse */}
-      <ellipse cx="160" cy="158" rx="108" ry="20" stroke={O} strokeWidth="3.4" />
-      {/* husk texture following the curve */}
+      {/* leaf veins */}
       <path
-        d="M78 196c10 16 16 26 20 40M120 228c6 12 9 20 10 30M200 228c-6 12-9 20-10 30M242 196c-10 16-16 26-20 40M160 244v26"
+        d="M244 122c20-34 48-50 82-52M256 118c16-26 38-40 64-46M268 116c12-20 28-32 48-38"
         stroke={O}
-        strokeWidth="2"
+        strokeWidth="1.8"
+        opacity="0.75"
+      />
+      {/* umbrella stem down into the sand */}
+      <path
+        d="M236 132c8 22 10 44 8 66"
+        stroke={O}
+        strokeWidth="2.6"
+        strokeLinecap="round"
+      />
+
+      {/* ---------- code speech bubble, upper left ---------- */}
+      <path
+        d="M46 40h84c8 0 14 6 14 14v34c0 8-6 14-14 14H86l-20 20V102H46c-8 0-14-6-14-14V54c0-8 6-14 14-14Z"
+        stroke={O}
+        strokeWidth="2.6"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M66 62l-12 9 12 9M112 62l12 9-12 9M96 58l-14 26"
+        stroke={O}
+        strokeWidth="2.4"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+
+      {/* ---------- coconut shell ---------- */}
+      {/* outer hemisphere */}
+      <path
+        d="M28 224a124 108 0 0 0 248 0Z"
+        stroke={O}
+        strokeWidth="3"
+        strokeLinejoin="round"
+      />
+      {/* rim */}
+      <ellipse cx="152" cy="224" rx="124" ry="26" stroke={O} strokeWidth="3" />
+      {/* inner rim line, gives the shell thickness */}
+      <ellipse
+        cx="152"
+        cy="224"
+        rx="112"
+        ry="20"
+        stroke={O}
+        strokeWidth="1.8"
+        opacity="0.7"
+      />
+      {/* husk striations following the curve */}
+      <path
+        d="M64 268c8 18 14 30 18 44M104 296c5 14 8 24 9 34M152 306v36M200 296c-5 14-8 24-9 34M240 268c-8 18-14 30-18 44"
+        stroke={O}
+        strokeWidth="1.9"
         strokeLinecap="round"
         opacity="0.6"
       />
 
-      {/* ---- lagoon water in the left of the shell ---- */}
+      {/* ---------- lagoon water, left inside the shell ---------- */}
       <path
-        d="M62 152c0 11 34 20 76 20 20 0 38-2 50-6-10-12-32-20-58-20-38 0-68 2-68 6Z"
-        fill="#1D6273"
-        opacity="0.75"
+        d="M46 222c0 14 30 26 72 26 16 0 30-2 42-6-8-16-30-26-56-26-34 0-58 2-58 6Z"
+        fill="#1D6E78"
       />
       <path
-        d="M74 146c14-6 28-4 40 0M90 158c16-5 30-4 42 1"
-        stroke="#3E9AAC"
+        d="M62 216c12-5 26-4 38 0M76 232c14-4 28-3 40 2"
+        stroke="#4FA8B4"
+        strokeWidth="2.2"
+        strokeLinecap="round"
+        opacity="0.9"
+      />
+
+      {/* ---------- sand island, right inside the shell ---------- */}
+      <path
+        d="M120 232c16-26 50-34 82-22 18 7 34 6 50 0 4 14-28 26-72 26-30 0-52-2-60-4Z"
+        fill="#C9762C"
+      />
+      <path
+        d="M120 232c16-26 50-34 82-22 18 7 34 6 50 0"
+        stroke={O}
         strokeWidth="2.4"
         strokeLinecap="round"
-        opacity="0.8"
       />
 
-      {/* ---- sand island on the right ---- */}
+      {/* ---------- small palm at the water's edge ---------- */}
       <path
-        d="M130 166c14-20 44-26 70-16 16 6 30 6 44 2 0 10-30 18-70 18-24 0-38-2-44-4Z"
-        fill="#C97A2E"
-        opacity="0.55"
+        d="M108 226v-42"
+        stroke={O}
+        strokeWidth="2.4"
+        strokeLinecap="round"
       />
       <path
-        d="M130 166c14-20 44-26 70-16 16 6 30 6 44 2"
+        d="M108 184c-12-8-20-6-24 1M108 184c12-8 20-6 24 1M108 184c-4-11 0-18 6-21M108 184c6-10 14-11 20-7"
         stroke={O}
-        strokeWidth="2.6"
+        strokeWidth="2.4"
         strokeLinecap="round"
       />
 
-      {/* ---- builder figure, seated on the sand ---- */}
+      {/* ---------- builder figure ---------- */}
       {/* head */}
-      <circle cx="188" cy="78" r="17" stroke={O} strokeWidth="2.8" />
+      <circle cx="182" cy="128" r="17" stroke={O} strokeWidth="2.8" />
       {/* hair */}
       <path
-        d="M174 69c5-10 23-12 28-2M180 63c3-5 9-7 14-5"
+        d="M168 119c5-11 24-13 29-2M174 113c3-5 9-7 15-5"
         stroke={O}
         strokeWidth="2.4"
         strokeLinecap="round"
       />
-      {/* torso */}
-      <path d="M188 95v32" stroke={O} strokeWidth="2.8" strokeLinecap="round" />
-      {/* shoulders */}
+      {/* body */}
       <path
-        d="M172 106c10-7 22-7 32 0"
+        d="M182 145v34"
+        stroke={O}
+        strokeWidth="2.8"
+        strokeLinecap="round"
+      />
+      <path
+        d="M165 158c11-8 23-8 34 0"
         stroke={O}
         strokeWidth="2.6"
         strokeLinecap="round"
       />
-      {/* arms reaching to the laptop */}
+      {/* arms to the keyboard */}
       <path
-        d="M172 108c-7 9-9 16-7 22M204 108c7 9 9 16 7 22"
+        d="M165 160c-8 10-10 17-8 24M199 160c8 10 10 17 8 24"
         stroke={O}
         strokeWidth="2.6"
         strokeLinecap="round"
       />
-      {/* crossed legs */}
+      {/* crossed legs on the sand */}
       <path
-        d="M188 127c-12 7-20 11-30 10M188 127c12 7 20 11 30 9"
+        d="M182 179c-13 8-22 12-32 11M182 179c13 8 22 12 32 10"
         stroke={O}
         strokeWidth="2.8"
         strokeLinecap="round"
       />
       {/* laptop */}
       <path
-        d="M162 134h52l7 15h-66l7-15Z"
-        stroke={O}
-        strokeWidth="2.8"
-        strokeLinejoin="round"
-      />
-      <path d="M168 134v-18h40v18" stroke={O} strokeWidth="2.8" strokeLinejoin="round" />
-
-      {/* ---- code speech bubble ---- */}
-      <path
-        d="M120 22h72c7 0 12 5 12 12v26c0 7-5 12-12 12h-44l-16 14V72h-12c-7 0-12-5-12-12V34c0-7 5-12 12-12Z"
+        d="M154 186h56l8 16h-72l8-16Z"
         stroke={O}
         strokeWidth="2.8"
         strokeLinejoin="round"
       />
       <path
-        d="M144 39l-9 8 9 8M180 39l9 8-9 8M168 36l-12 22"
-        stroke={O}
-        strokeWidth="2.6"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-
-      {/* ---- big leaf umbrella over the builder ---- */}
-      <path
-        d="M222 92c20-46 62-56 86-30-26-10-50 0-64 30Z"
-        stroke={O}
-        strokeWidth="3"
-        strokeLinejoin="round"
-      />
-      {/* leaf ribs */}
-      <path
-        d="M244 84c14-26 38-34 58-24M236 90c16-30 44-38 66-26"
-        stroke={O}
-        strokeWidth="1.9"
-        opacity="0.75"
-      />
-      <path
-        d="M262 62c5 9 6 17 4 25M282 58c4 8 4 16 2 22"
-        stroke={O}
-        strokeWidth="1.8"
-        opacity="0.7"
-      />
-      {/* stem down to the sand */}
-      <path
-        d="M240 96c10 18 13 34 11 52"
+        d="M160 186v-20h44v20"
         stroke={O}
         strokeWidth="2.8"
-        strokeLinecap="round"
-      />
-
-      {/* ---- little palm at the water's edge ---- */}
-      <path
-        d="M112 158V118"
-        stroke={O}
-        strokeWidth="2.4"
-        strokeLinecap="round"
-      />
-      <path
-        d="M112 118c-11-7-19-5-23 1M112 118c11-7 19-5 23 1M112 118c-4-10 0-16 5-19M112 118c5-9 13-10 19-6"
-        stroke={O}
-        strokeWidth="2.4"
-        strokeLinecap="round"
-      />
-
-      {/* ---- drink with straw, on the sand ---- */}
-      <path
-        d="M232 138h22l-4 20h-14l-4-20Z"
-        stroke={O}
-        strokeWidth="2.4"
         strokeLinejoin="round"
       />
-      <path d="M250 138l9-16" stroke={O} strokeWidth="2.4" strokeLinecap="round" />
-      <circle cx="261" cy="119" r="4" stroke="#E8336E" strokeWidth="2.2" />
 
-      {/* ---- ripples ---- */}
+      {/* ---------- little drink umbrella on the sand ---------- */}
       <path
-        d="M30 250c14 8 26 8 40 0M250 258c14 8 26 8 40 0"
+        d="M236 206l14-14 14 14Z"
+        stroke="#E8336E"
+        strokeWidth="2.2"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M250 192v24"
+        stroke="#E8336E"
+        strokeWidth="2.2"
+        strokeLinecap="round"
+      />
+
+      {/* ---------- water ripples outside the shell ---------- */}
+      <path
+        d="M6 300c18 10 34 10 52 0M290 286c20 10 36 10 56 0M300 320c16 8 30 8 46 0"
         stroke={O}
         strokeWidth="2"
         strokeLinecap="round"
-        opacity="0.6"
+        opacity="0.55"
       />
     </svg>
   );
