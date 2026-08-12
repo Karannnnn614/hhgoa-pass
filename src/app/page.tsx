@@ -456,11 +456,13 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-cream/10 px-6 py-10">
-        <Contributors />
-        <p className="mt-8 text-center text-xs text-cream/40">
-          Hacker House Goa 2026 · Build. Ship. Ascend. · #FrameInGoa
-        </p>
+      <footer className="border-t border-cream/10 px-6 py-6 text-xs text-cream/40">
+        <div className="mx-auto flex max-w-6xl flex-col-reverse items-center gap-4 sm:flex-row sm:justify-between sm:gap-6">
+          <p className="text-center sm:text-left">
+            Hacker House Goa 2026 · Build. Ship. Ascend. · #FrameInGoa
+          </p>
+          <Contributors />
+        </div>
       </footer>
     </main>
   );

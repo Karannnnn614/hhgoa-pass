@@ -62,7 +62,9 @@ function Avatar({ person }: { person: Person }) {
 export default function Contributors() {
   return (
     <span className="inline-flex items-center gap-2 align-middle">
-      <span className="text-cream/40">Built by</span>
+      <span className="font-bold uppercase tracking-[0.15em] text-cream/40">
+        Shipped by
+      </span>
       <span className="flex items-center">
         {TEAM.map((person, index) => (
           <span key={person.handle} className={index > 0 ? "-ml-2" : ""}>
