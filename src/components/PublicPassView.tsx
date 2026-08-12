@@ -7,6 +7,7 @@ import { type PassData } from "@/components/PassCard";
 import { makeQr } from "@/lib/qr";
 import { download, slugify, toPng } from "@/lib/render";
 import type { PublicPassFields } from "@/lib/passLink";
+import type { Photo } from "@/lib/photo";
 
 export default function PublicPassView({ passId, fields }: { passId: string; fields: PublicPassFields }) {
   const [data, setData] = useState<PassData>({ ...fields, passId, photo: null, transform: { x: 0, y: 0, zoom: 1 } });
@@ -16,6 +17,24 @@ export default function PublicPassView({ passId, fields }: { passId: string; fie
   const cardRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    const shineTimer = window.setTimeout(() => setShineToken((token) => token + 1), 650);
+    let restoreTimer: number | undefined;
+    const photoKey = `hhgoa-photo:${passId}`;
+    try {
+      const stored = window.localStorage.getItem(photoKey);
+      if (stored) {
+        const photo = JSON.parse(stored) as Photo;
+        if (typeof photo.src === "string" && photo.src.startsWith("data:image/")) {
+          restoreTimer = window.setTimeout(() => {
+            setData((previous) => ({ ...previous, photo }));
+            setShineToken((token) => token + 1);
+          }, 0);
+        }
+      }
+    } catch {
+      // Public links still render the branded card when local photo data is unavailable.
+    }
+
     async function loadQr() {
       try {
         const qr = await makeQr(window.location.href);
@@ -25,7 +44,11 @@ export default function PublicPassView({ passId, fields }: { passId: string; fie
       }
     }
     loadQr();
-  }, []);
+    return () => {
+      window.clearTimeout(shineTimer);
+      if (restoreTimer) window.clearTimeout(restoreTimer);
+    };
+  }, [passId]);
 
   const onDownload = async () => {
     if (!cardRef.current) return;

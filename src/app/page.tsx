@@ -45,6 +45,15 @@ export default function Home() {
   // Compute deterministic pass ID
   const passId = generatePassId(form.firstName, form.lastName, form.xUsername);
 
+  useEffect(() => {
+    if (!photo || typeof window === "undefined") return;
+    try {
+      window.localStorage.setItem(`hhgoa-photo:${passId}`, JSON.stringify(photo));
+    } catch {
+      // A large photo can exceed browser storage; the live card still works.
+    }
+  }, [passId, photo]);
+
   // Compute validation errors
   const errors: ValidationErrors = validatePassInput(form);
   const hasErrors = Object.keys(errors).length > 0;
