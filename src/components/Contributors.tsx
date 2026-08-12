@@ -61,13 +61,20 @@ function Avatar({ person }: { person: Person }) {
 
 export default function Contributors() {
   return (
-    <span className="inline-flex items-center gap-2 align-middle">
-      <span className="font-bold uppercase tracking-[0.15em] text-cream/40">
+    <span className="inline-flex shrink-0 items-center gap-2 align-middle">
+      {/* Label is the first thing to go when a phone runs out of width. */}
+      <span className="hidden text-[10px] font-bold uppercase tracking-[0.15em] text-cream/40 min-[380px]:inline sm:text-xs">
         Shipped by
       </span>
       <span className="flex items-center">
         {TEAM.map((person, index) => (
-          <span key={person.handle} className={index > 0 ? "-ml-2" : ""}>
+          <span
+            key={person.handle}
+            className={index > 0 ? "-ml-2" : ""}
+            // First avatar sits fully on top; each later one tucks behind the
+            // previous. Hovering any of them raises it above the rest.
+            style={{ zIndex: TEAM.length - index }}
+          >
             <Avatar person={person} />
           </span>
         ))}

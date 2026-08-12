@@ -456,9 +456,10 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-cream/10 px-6 py-6 text-xs text-cream/40">
-        <div className="mx-auto flex max-w-6xl flex-col-reverse items-center gap-4 sm:flex-row sm:justify-between sm:gap-6">
-          <p className="text-center sm:text-left">
+      <footer className="border-t border-cream/10 px-4 py-5 text-cream/40 sm:px-6 sm:py-6">
+        <div className="mx-auto flex max-w-6xl items-center justify-between gap-3">
+          {/* Shrinks rather than wrapping, so the footer stays one row on phones. */}
+          <p className="min-w-0 text-[10px] leading-tight sm:text-xs">
             Hacker House Goa 2026 · Build. Ship. Ascend. · #FrameInGoa
           </p>
           <Contributors />
