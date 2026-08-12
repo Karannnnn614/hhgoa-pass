@@ -24,7 +24,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
     g: fields.teamName,
     h: fields.xUsername,
   });
-  const og = `${siteUrl()}/api/og?${query}`;
+  const og = `${siteUrl()}/api/og?${new URLSearchParams({ ...Object.fromEntries(query), p: id })}`;
   const name = [fields.firstName, fields.lastName].filter(Boolean).join(" ") || "Builder";
 
   return {

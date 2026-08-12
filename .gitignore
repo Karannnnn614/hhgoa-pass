@@ -36,6 +36,9 @@ yarn-error.log*
 # vercel
 .vercel
 
+# Temporary local photo-store artifacts
+/tmp/photo-store/
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts

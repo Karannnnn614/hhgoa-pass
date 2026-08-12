@@ -1,8 +1,9 @@
 import { ImageResponse } from "next/og";
 import { builderId } from "@/lib/builderClass";
 import plate from "@/lib/plate.json";
+import { getPhoto } from "@/lib/photoStore";
 
-export const runtime = "edge";
+export const runtime = "nodejs";
 
 function toBase64(bytes: Uint8Array): string {
   let binary = "";
@@ -28,6 +29,7 @@ export async function GET(req: Request) {
   const stack = (searchParams.get("s") || "").slice(0, 34);
   const handle = (searchParams.get("h") || "").slice(0, 20).replace(/^@/, "");
   const id = builderId(name, handle);
+  const storedPhoto = getPhoto(searchParams.get("p") || "");
 
   const parts = name.trim().split(/\s+/).filter(Boolean);
   const line1 = parts[0] ?? "YOUR";
@@ -132,8 +134,22 @@ export async function GET(req: Request) {
               />
             )}
 
-            {/* initials monogram in the photo circle (no photo in the URL) */}
-            <div
+            {storedPhoto ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={storedPhoto.src}
+                width={photo.r * 2}
+                height={photo.r * 2}
+                style={{
+                  position: "absolute",
+                  left: photo.cx - photo.r,
+                  top: photo.cy - photo.r,
+                  borderRadius: 999,
+                  objectFit: "cover",
+                }}
+                alt=""
+              />
+            ) : <div
               style={{
                 position: "absolute",
                 left: photo.cx - photo.r,
@@ -151,7 +167,7 @@ export async function GET(req: Request) {
               }}
             >
               {initials}
-            </div>
+            </div>}
 
             {/* name + title, in the open area above the box */}
             <div

@@ -39,6 +39,7 @@ export default function Home() {
   const builderRef = useRef<HTMLDivElement>(null);
   const builderGridRef = useRef<HTMLDivElement>(null);
   const shineTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const photoUpload = useRef<Promise<void> | null>(null);
   const cardRef = useRef<HTMLDivElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
 
@@ -47,6 +48,13 @@ export default function Home() {
 
   useEffect(() => {
     if (!photo || typeof window === "undefined") return;
+    photoUpload.current = fetch(`/api/photos/${encodeURIComponent(passId)}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(photo),
+    }).then((response) => {
+      if (!response.ok) throw new Error("Photo upload failed");
+    }).catch(() => undefined);
     try {
       window.localStorage.setItem(`hhgoa-photo:${passId}`, JSON.stringify(photo));
     } catch {
@@ -59,8 +67,9 @@ export default function Home() {
   const hasErrors = Object.keys(errors).length > 0;
 
   // Pack the live public fields into one compact, portable URL path token.
-  const getPermalink = useCallback(() => {
+  const getPermalink = useCallback(async () => {
     if (typeof window === "undefined") return "";
+    await photoUpload.current;
     return compactPassLink(window.location.origin, passId, form);
   }, [form, passId]);
 
@@ -69,7 +78,7 @@ export default function Home() {
     let active = true;
     const timer = setTimeout(async () => {
       try {
-        const link = getPermalink();
+        const link = await getPermalink();
         if (link) {
           const qr = await makeQr(link);
           if (active) setQrCodeUrl(qr);
@@ -133,16 +142,16 @@ export default function Home() {
     }
   };
 
-  const onCopyLink = () => {
-    const link = getPermalink();
+  const onCopyLink = async () => {
+    const link = await getPermalink();
     navigator.clipboard.writeText(link);
     setCopied(true);
     setShineToken((token) => token + 1);
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const onShareX = () => {
-    const permalink = getPermalink();
+  const onShareX = async () => {
+    const permalink = await getPermalink();
     const text = SHARE_TEXT(form.firstName.trim() || "Builder");
     const url = `https://x.com/intent/tweet?text=${encodeURIComponent(
       text

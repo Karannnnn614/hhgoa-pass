@@ -43,7 +43,19 @@ export default function PublicPassView({ passId, fields }: { passId: string; fie
         console.error("QR error:", error);
       }
     }
+    async function loadPhoto() {
+      try {
+        const response = await fetch(`/api/photos/${encodeURIComponent(passId)}`, { cache: "no-store" });
+        if (!response.ok) return;
+        const photo = (await response.json()) as Photo;
+        setData((previous) => ({ ...previous, photo }));
+        setShineToken((token) => token + 1);
+      } catch {
+        // The pass remains usable when the temporary photo is unavailable.
+      }
+    }
     loadQr();
+    loadPhoto();
     return () => {
       window.clearTimeout(shineTimer);
       if (restoreTimer) window.clearTimeout(restoreTimer);
