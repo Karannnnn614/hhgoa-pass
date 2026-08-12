@@ -5,6 +5,38 @@ import type { Photo } from "@/lib/photo";
 
 export type Transform = { x: number; y: number; zoom: number };
 
+export function clampTransform(t: Transform, photo?: Photo | null): Transform {
+  const zoom = Math.min(3, Math.max(1, t.zoom));
+  if (!photo || !photo.width || !photo.height) {
+    const over = Math.max(0, (zoom - 1) / 2 - 0.01);
+    return {
+      zoom,
+      x: Math.min(over, Math.max(-over, t.x)),
+      y: Math.min(over, Math.max(-over, t.y)),
+    };
+  }
+
+  const ratio = photo.width / photo.height;
+  let maxX: number;
+  let maxY: number;
+
+  if (ratio >= 1) {
+    // Landscape photo: cover width is ratio * zoom, cover height is zoom
+    maxX = Math.max(0, (ratio * zoom - 1) / 2 - 0.01);
+    maxY = Math.max(0, (zoom - 1) / 2 - 0.01);
+  } else {
+    // Portrait photo: cover width is zoom, cover height is (1 / ratio) * zoom
+    maxX = Math.max(0, (zoom - 1) / 2 - 0.01);
+    maxY = Math.max(0, ((1 / ratio) * zoom - 1) / 2 - 0.01);
+  }
+
+  return {
+    zoom,
+    x: Math.min(maxX, Math.max(-maxX, t.x)),
+    y: Math.min(maxY, Math.max(-maxY, t.y)),
+  };
+}
+
 /**
  * Cover-fits the photo into a circular slot, then lets the user nudge it.
  * x/y are offsets in slot-fractions so the transform survives rasterising
@@ -30,15 +62,7 @@ export default function PhotoSlot({
   const pinch = useRef<{ dist: number; zoom: number } | null>(null);
   const [grabbing, setGrabbing] = useState(false);
 
-  const clamp = (t: Transform): Transform => {
-    // Keep the photo covering the slot: offsets bounded by the overflow.
-    const over = (t.zoom - 1) / 2 + 0.35;
-    return {
-      zoom: Math.min(3, Math.max(1, t.zoom)),
-      x: Math.min(over, Math.max(-over, t.x)),
-      y: Math.min(over, Math.max(-over, t.y)),
-    };
-  };
+  const clamp = (t: Transform): Transform => clampTransform(t, photo);
 
   const size = () => ref.current?.getBoundingClientRect().width ?? 1;
 
@@ -111,9 +135,8 @@ export default function PhotoSlot({
       onTouchStart={onTouchStart}
       onTouchMove={onTouchMove}
       onTouchEnd={() => (pinch.current = null)}
-      className={`no-select relative overflow-hidden ${
-        interactive ? (grabbing ? "cursor-grabbing" : "cursor-grab") : ""
-      } ${className}`}
+      className={`no-select relative overflow-hidden ${interactive ? (grabbing ? "cursor-grabbing" : "cursor-grab") : ""
+        } ${className}`}
     >
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
@@ -124,11 +147,11 @@ export default function PhotoSlot({
           position: "absolute",
           width: coverW,
           height: coverH,
-          left: "50%",
-          top: "50%",
-          transform: `translate(-50%, -50%) translate(${transform.x * 100}%, ${
-            transform.y * 100
-          }%)`,
+          maxWidth: "none",
+          maxHeight: "none",
+          left: `calc(50% + ${transform.x * 100}%)`,
+          top: `calc(50% + ${transform.y * 100}%)`,
+          transform: "translate(-50%, -50%)",
           objectFit: "cover",
         }}
       />

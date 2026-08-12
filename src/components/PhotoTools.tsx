@@ -1,6 +1,7 @@
 "use client";
 
-import type { Transform } from "./PhotoSlot";
+import { clampTransform, type Transform } from "./PhotoSlot";
+import type { Photo } from "@/lib/photo";
 
 function Btn({
   onClick,
@@ -24,22 +25,17 @@ function Btn({
 
 /** Visible controls for the photo slot — zoom, nudge, rotate-free reset. */
 export default function PhotoTools({
+  photo,
   transform,
   onChange,
   onReplace,
 }: {
+  photo?: Photo | null;
   transform: Transform;
   onChange: (t: Transform) => void;
   onReplace: () => void;
 }) {
-  const clamp = (t: Transform): Transform => {
-    const over = (t.zoom - 1) / 2 + 0.35;
-    return {
-      zoom: Math.min(3, Math.max(1, t.zoom)),
-      x: Math.min(over, Math.max(-over, t.x)),
-      y: Math.min(over, Math.max(-over, t.y)),
-    };
-  };
+  const clamp = (t: Transform): Transform => clampTransform(t, photo);
 
   const nudge = (dx: number, dy: number) =>
     onChange(clamp({ ...transform, x: transform.x + dx, y: transform.y + dy }));
