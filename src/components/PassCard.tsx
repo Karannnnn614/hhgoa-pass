@@ -209,23 +209,25 @@ const PassCard = forwardRef<
           )}
         </div>
 
-        <div
-          style={{
-            fontFamily: 'var(--font-roboto-condensed), "Roboto Condensed", sans-serif',
-            marginTop: 18,
-            fontSize: subSize,
-            color: "#F2762F",
-            fontWeight: 700,
-            letterSpacing: "0.02em",
-          }}
-        >
-          {subtitleItems.map((item, index) => (
-            <span key={`${item}-${index}`}>
-              {index > 0 && <span style={{ color: "#FF3F68", margin: "0 12px" }}>•</span>}
-              {item}
-            </span>
-          ))}
-        </div>
+        {subtitleItems.length > 0 && (
+          <div
+            style={{
+              fontFamily: 'var(--font-roboto-condensed), "Roboto Condensed", sans-serif',
+              marginTop: 18,
+              fontSize: subSize,
+              color: "#F2762F",
+              fontWeight: 700,
+              letterSpacing: "0.02em",
+            }}
+          >
+            {subtitleItems.map((item, index) => (
+              <span key={`${item}-${index}`}>
+                {index > 0 && <span style={{ color: "#FF3F68", margin: "0 12px" }}>•</span>}
+                {item}
+              </span>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Bottom Box Rows */}

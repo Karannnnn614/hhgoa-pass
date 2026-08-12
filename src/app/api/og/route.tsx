@@ -3,6 +3,9 @@ import { builderId } from "@/lib/builderClass";
 import plate from "@/lib/plate.json";
 import { getPhoto } from "@/lib/photoStore";
 
+import fs from "node:fs";
+import path from "node:path";
+
 export const runtime = "nodejs";
 
 function toBase64(bytes: Uint8Array): string {
@@ -39,7 +42,12 @@ export async function GET(req: Request) {
   if (longest > 12) nameSize = 54;
   else if (longest > 9) nameSize = 66;
 
-  const details = [title, stack, handle ? `@${handle}` : ""]
+  const subtitleItems = [title, stack]
+    .flatMap((value) => value.split(","))
+    .map((value) => value.trim())
+    .filter(Boolean);
+
+  const details = [subtitleItems.join("  ·  "), handle ? `@${handle}` : ""]
     .filter(Boolean)
     .join("  ·  ");
 
@@ -70,7 +78,15 @@ export async function GET(req: Request) {
       plateSrc = `data:image/png;base64,${toBase64(new Uint8Array(await res.arrayBuffer()))}`;
     }
   } catch {
-    /* fall through — the layout still reads as the event without it */
+    /* fall through to local filesystem fallback */
+  }
+  if (!plateSrc) {
+    try {
+      const buf = fs.readFileSync(path.join(process.cwd(), "public/plate.png"));
+      plateSrc = `data:image/png;base64,${toBase64(new Uint8Array(buf))}`;
+    } catch {
+      /* fall through */
+    }
   }
 
   return new ImageResponse(
@@ -174,39 +190,47 @@ export async function GET(req: Request) {
               style={{
                 position: "absolute",
                 left: 78 * K,
-                top: 1060 * K,
+                right: 90 * K,
+                bottom: (1632 - 1268) * K,
                 display: "flex",
                 flexDirection: "column",
-                fontSize: badgeName,
-                fontWeight: 900,
-                color: "#F2E2BC",
-                lineHeight: 1.02,
               }}
             >
-              <span>{line1.toUpperCase()}</span>
-              {line2 && <span>{line2.toUpperCase()}</span>}
-            </div>
-            <div
-              style={{
-                position: "absolute",
-                left: 78 * K,
-                top: 1210 * K,
-                fontSize: 30 * K,
-                fontWeight: 700,
-                color: "#F2762F",
-                display: "flex",
-              }}
-            >
-              {[title, stack]
-                .flatMap((value) => value.split(","))
-                .map((value) => value.trim())
-                .filter(Boolean)
-                .map((value, index) => (
-                  <span key={`${value}-${index}`}>
-                    {index > 0 && <span style={{ color: "#FF3F68", margin: "0 12px" }}>•</span>}
-                    {value}
-                  </span>
-                ))}
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  fontSize: badgeName,
+                  fontWeight: 900,
+                  color: "#F2E2BC",
+                  lineHeight: 1.0,
+                  letterSpacing: -1,
+                }}
+              >
+                <span>{line1.toUpperCase()}</span>
+                {line2 && <span>{line2.toUpperCase()}</span>}
+              </div>
+              {subtitleItems.length > 0 && (
+                <div
+                  style={{
+                    marginTop: 14 * K,
+                    fontSize: 26 * K,
+                    fontWeight: 700,
+                    color: "#F2762F",
+                    display: "flex",
+                    flexWrap: "wrap",
+                  }}
+                >
+                  {subtitleItems.map((value, index) => (
+                    <span key={`${value}-${index}`}>
+                      {index > 0 && (
+                        <span style={{ color: "#FF3F68", margin: `0 ${8 * K}px` }}>•</span>
+                      )}
+                      {value}
+                    </span>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* bottom box: team name + X username */}
