@@ -1,51 +1,52 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import HeroBackdrop from "@/components/HeroBackdrop";
 
-const SEEN = "hhgoa-intro-seen";
-
-/**
- * Full-screen intro that plays once, then hands over to the landing.
- * Skipped entirely on mobile, for reduced-motion, and on repeat visits —
- * so the mp4 is only ever fetched when it will actually be watched.
- */
-/** Decided once, lazily, on the client. Server render is always null. */
 function shouldPlay(): boolean {
-  if (typeof window === "undefined") return false;
-  return !(
-    sessionStorage.getItem(SEEN) === "1" ||
-    window.matchMedia("(prefers-reduced-motion: reduce)").matches ||
-    window.innerWidth < 768
-  );
+  return typeof window !== "undefined";
 }
 
 export default function Intro() {
-  // lazy initialiser: no setState-in-effect, no cascading render
   const [show, setShow] = useState<boolean | null>(null);
   const [fading, setFading] = useState(false);
-  const video = useRef<HTMLVideoElement>(null);
+  const [progress, setProgress] = useState(0);
   const finished = useRef(false);
 
   const finish = useCallback(() => {
     if (finished.current) return;
     finished.current = true;
-    sessionStorage.setItem(SEEN, "1");
     setFading(true);
-    setTimeout(() => setShow(false), 620);
+    setTimeout(() => setShow(false), 550);
   }, []);
 
   useEffect(() => {
-    // Decided after mount (needs sessionStorage + viewport), so it can't be
-    // a lazy initialiser without risking a hydration mismatch.
     const play = shouldPlay();
-    if (!play) finished.current = true;
-    const id = setTimeout(() => setShow(play), 0);
+    if (!play) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setShow(false);
+      return;
+    }
 
-    // Hard cap: never hold the user longer than the clip runs.
-    const cap = play ? setTimeout(finish, 9000) : undefined;
+    const id = setTimeout(() => setShow(true), 0);
+    const start = performance.now();
+    let frame = 0;
+
+    const tick = (now: number) => {
+      const value = Math.min((now - start) / 4200, 1);
+      setProgress(value * 100);
+      if (value < 1) {
+        frame = requestAnimationFrame(tick);
+      } else {
+        setTimeout(finish, 280);
+      }
+    };
+
+    frame = requestAnimationFrame(tick);
+
     return () => {
       clearTimeout(id);
-      if (cap) clearTimeout(cap);
+      cancelAnimationFrame(frame);
     };
   }, [finish]);
 
@@ -53,28 +54,43 @@ export default function Intro() {
 
   return (
     <div
-      className="fixed inset-0 z-50 bg-ink transition-opacity duration-600"
+      className="fixed inset-0 z-50 overflow-hidden bg-[#00161A] transition-opacity duration-600"
       style={{ opacity: fading ? 0 : 1 }}
     >
-      <video
-        ref={video}
-        autoPlay
-        muted
-        playsInline
-        preload="auto"
-        poster="/hero-poster.webp"
-        onEnded={finish}
-        onError={finish}
-        className="h-full w-full object-cover"
-      >
-        <source src="/hero.mp4" type="video/mp4" />
-      </video>
+      <div className="absolute inset-0">
+        <HeroBackdrop />
+      </div>
+
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(255,122,50,0.22),transparent_36%)]" />
+
+      <div className="relative z-10 flex min-h-screen flex-col items-center justify-center px-6 text-center">
+        <div className="mb-5 text-[clamp(3rem,9vw,8rem)] font-black uppercase leading-[0.82] tracking-[-0.08em] text-[#f8e7b9] drop-shadow-[0_0_30px_rgba(255,122,50,0.25)]">
+          HACKER HOUSE
+        </div>
+
+        <div className="text-[10px] font-bold tracking-[0.42em] text-[#ff3f68] uppercase sm:text-xs">
+          GOA • INDIA • 2026
+        </div>
+
+        <div className="mt-7 flex w-36 items-center justify-center sm:w-44">
+          <div className="h-1.5 w-full overflow-hidden rounded-full bg-white/10 ring-1 ring-[#ff8a24]/40">
+            <div
+              className="h-full rounded-full bg-gradient-to-r from-[#ff8a24] via-[#f6c161] to-[#ff3f68] transition-[width] duration-150 ease-out"
+              style={{ width: `${progress}%` }}
+            />
+          </div>
+        </div>
+
+        <div className="mt-4 text-[9px] font-bold tracking-[0.26em] text-[#f8e7b9]/80 uppercase">
+          Loading
+        </div>
+      </div>
 
       <button
         onClick={finish}
         className="absolute right-6 top-6 rounded-full border border-cream/40 bg-ink/50 px-5 py-2.5 text-sm font-bold text-cream backdrop-blur-sm transition hover:border-cream hover:bg-ink/70"
       >
-        Skip intro →
+        Skip
       </button>
     </div>
   );

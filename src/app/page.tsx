@@ -153,7 +153,7 @@ export default function Home() {
 
         <header className="relative z-10 flex items-start justify-between px-5 pt-4 sm:px-10 sm:pt-7 lg:px-16">
           <div className="flex items-center gap-4 md:hidden">
-            <HouseMark className="h-14 w-16 sm:h-[78px] sm:w-[88px]" />
+            <HouseMark className="h-14 w-16 sm:h-19.5 sm:w-22" />
             <span className="h-10 w-px bg-orange/70 sm:h-14" />
           </div>
           <a
@@ -227,7 +227,7 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="flex items-center justify-center gap-3 whitespace-nowrap text-center text-[9px] font-bold tracking-[0.16em] text-[#C88724] uppercase md:hidden">
+          <div className="flex items-center justify-center gap-3 whitespace-nowrap text-center text-[9px] font-bold tracking-[0.16em] text-gold uppercase md:hidden">
             <WaveMark className="hidden h-2 w-8 text-pink opacity-80 sm:block" />
             <span>BUILT BY BUILDERS, FOR BUILDERS</span>
             <WaveMark className="hidden h-2 w-8 text-pink opacity-80 sm:block" />

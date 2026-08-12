@@ -111,9 +111,8 @@ export default function PhotoSlot({
       onTouchStart={onTouchStart}
       onTouchMove={onTouchMove}
       onTouchEnd={() => (pinch.current = null)}
-      className={`no-select relative overflow-hidden ${
-        interactive ? (grabbing ? "cursor-grabbing" : "cursor-grab") : ""
-      } ${className}`}
+      className={`no-select relative overflow-hidden ${interactive ? (grabbing ? "cursor-grabbing" : "cursor-grab") : ""
+        } ${className}`}
     >
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
@@ -126,9 +125,8 @@ export default function PhotoSlot({
           height: coverH,
           left: "50%",
           top: "50%",
-          transform: `translate(-50%, -50%) translate(${transform.x * 100}%, ${
-            transform.y * 100
-          }%)`,
+          transform: `translate(-50%, -50%) translate(${transform.x * 100}%, ${transform.y * 100
+            }%)`,
           objectFit: "cover",
         }}
       />
