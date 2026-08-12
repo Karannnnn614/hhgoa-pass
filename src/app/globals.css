@@ -21,6 +21,10 @@ body {
   background: var(--color-ink);
   color: var(--color-cream);
   -webkit-font-smoothing: antialiased;
+  /* A single overhanging element used to make the whole page drag sideways,
+     showing the backdrop past the layout edge. Nothing here scrolls
+     horizontally by design. */
+  overflow-x: hidden;
 }
 
 body {

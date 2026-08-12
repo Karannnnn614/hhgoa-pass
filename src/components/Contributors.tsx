@@ -34,9 +34,12 @@ function Avatar({ person }: { person: Person }) {
       onTouchStart={() => setOpen((value) => !value)}
       aria-label={`${person.name} (@${person.handle}) on GitHub`}
     >
+      {/* Anchored to the right edge, not centred: these avatars sit in the
+          footer's right corner, and a centred tooltip overhangs the viewport
+          and gives the whole page a horizontal scrollbar. */}
       <span
         role="tooltip"
-        className={`pointer-events-none absolute bottom-full left-1/2 z-20 mb-3 -translate-x-1/2 whitespace-nowrap rounded-xl border border-cream/15 bg-ink/95 px-3 py-2 text-center shadow-xl transition-all duration-200 ${
+        className={`pointer-events-none absolute bottom-full right-0 z-20 mb-3 whitespace-nowrap rounded-xl border border-cream/15 bg-ink/95 px-3 py-2 text-right shadow-xl transition-all duration-200 ${
           open ? "translate-y-0 opacity-100" : "translate-y-1 opacity-0"
         }`}
       >
