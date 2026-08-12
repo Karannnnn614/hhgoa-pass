@@ -1,3 +1,4 @@
+import dns from "node:dns";
 import { MongoClient, type Collection } from "mongodb";
 import type { Photo } from "@/lib/photo";
 
@@ -40,6 +41,13 @@ function collection(): Promise<Collection<StoredPhoto>> {
   if (!runtime.__hhgoaMongo) {
     const url = uri();
     if (!url) throw new Error("MONGODB_URI is not set");
+
+    // mongodb+srv:// needs an SRV lookup, and some local setups point Node at
+    // a loopback resolver that refuses them. Hosted environments resolve
+    // normally, so this branch never fires there.
+    if (dns.getServers().every((server) => server.startsWith("127."))) {
+      dns.setServers(["8.8.8.8", "1.1.1.1"]);
+    }
 
     runtime.__hhgoaMongo = new MongoClient(url, {
       serverSelectionTimeoutMS: 8000,
