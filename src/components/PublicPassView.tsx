@@ -12,6 +12,7 @@ export default function PublicPassView({ passId, fields }: { passId: string; fie
   const [data, setData] = useState<PassData>({ ...fields, passId, photo: null, transform: { x: 0, y: 0, zoom: 1 } });
   const [downloading, setDownloading] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [shineToken, setShineToken] = useState(0);
   const cardRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -32,6 +33,7 @@ export default function PublicPassView({ passId, fields }: { passId: string; fie
     try {
       const blob = await toPng(cardRef.current);
       download(blob, `builder-pass-${passId.toLowerCase()}-${slugify(fields.firstName)}.png`);
+      setShineToken((token) => token + 1);
     } catch (error) {
       console.error("Render failed:", error);
     } finally {
@@ -42,13 +44,14 @@ export default function PublicPassView({ passId, fields }: { passId: string; fie
   const onCopyLink = () => {
     navigator.clipboard.writeText(window.location.href);
     setCopied(true);
+    setShineToken((token) => token + 1);
     setTimeout(() => setCopied(false), 2000);
   };
 
   return (
     <main className="min-h-screen bg-[#001F22] flex flex-col items-center justify-center p-4 md:p-10 text-white">
       <div className="w-full max-w-[480px]">
-        <ScaledCard ref={cardRef} data={data} onTransform={(transform) => setData((previous) => ({ ...previous, transform }))} />
+        <ScaledCard ref={cardRef} data={data} onTransform={(transform) => setData((previous) => ({ ...previous, transform }))} shineToken={shineToken} />
         <div className="mt-6 flex flex-col gap-3">
           <button onClick={onDownload} disabled={downloading} className="w-full rounded-full bg-[#FF4265] py-3.5 px-6 font-bold text-white transition hover:brightness-110 disabled:opacity-60">
             {downloading ? "Rendering PNG…" : "Download PNG"}

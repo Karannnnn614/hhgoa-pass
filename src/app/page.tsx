@@ -22,6 +22,7 @@ export default function Home() {
   const [busy, setBusy] = useState(false);
   const [downloading, setDownloading] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [shineToken, setShineToken] = useState(0);
   const [errorMsg, setErrorMsg] = useState("");
 
   const [form, setForm] = useState({
@@ -36,6 +37,8 @@ export default function Home() {
   const [qrCodeUrl, setQrCodeUrl] = useState<string>("");
 
   const builderRef = useRef<HTMLDivElement>(null);
+  const builderGridRef = useRef<HTMLDivElement>(null);
+  const shineTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const cardRef = useRef<HTMLDivElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
 
@@ -73,8 +76,14 @@ export default function Home() {
     };
   }, [getPermalink]);
 
-  const scrollToBuilder = () => {
-    builderRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  const scrollToBuilder = (shineAfterScroll = false) => {
+    builderGridRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    if (!shineAfterScroll) return;
+    if (shineTimer.current) clearTimeout(shineTimer.current);
+    shineTimer.current = setTimeout(() => {
+      setShineToken((token) => token + 1);
+      shineTimer.current = null;
+    }, 1000);
   };
 
   // File Upload Handler
@@ -107,6 +116,7 @@ export default function Home() {
     try {
       const blob = await toPng(cardRef.current);
       download(blob, `builder-pass-${passId.toLowerCase()}-${slugify(form.firstName)}.png`);
+      setShineToken((token) => token + 1);
     } catch (e) {
       setErrorMsg(e instanceof Error ? e.message : "Render failed.");
     } finally {
@@ -118,6 +128,7 @@ export default function Home() {
     const link = getPermalink();
     navigator.clipboard.writeText(link);
     setCopied(true);
+    setShineToken((token) => token + 1);
     setTimeout(() => setCopied(false), 2000);
   };
 
@@ -188,7 +199,7 @@ export default function Home() {
           </p>
 
           <button
-            onClick={scrollToBuilder}
+            onClick={() => scrollToBuilder(true)}
             className="rise group mt-6 inline-flex items-center gap-5 rounded-full border-2 border-pink bg-pink px-6 py-3 text-sm font-extrabold text-cream shadow-[inset_0_-4px_0_#b61540,0_3px_0_#ff8a24] transition hover:scale-[1.03] active:scale-[0.98] sm:mt-8 sm:px-8 sm:py-4 sm:text-xl"
             style={{ animationDelay: "180ms" }}
           >
@@ -239,7 +250,7 @@ export default function Home() {
       <section
         ref={builderRef}
         id="builder-section"
-        className="relative mx-auto max-w-6xl px-5 py-20 md:px-10 border-t border-cream/10"
+        className="scroll-mt-4 relative mx-auto max-w-6xl px-5 py-20 md:px-10 border-t border-cream/10"
       >
         <div className="mb-12 text-center max-w-2xl mx-auto">
           <p className="text-xs font-bold tracking-[0.34em] text-pink uppercase mb-2">
@@ -255,7 +266,7 @@ export default function Home() {
         </div>
 
         {/* Grid: Form on Left, Card Preview on Right */}
-        <div className="grid gap-12 lg:grid-cols-12 items-start">
+        <div ref={builderGridRef} className="scroll-mt-6 grid gap-12 lg:grid-cols-12 items-start">
           {/* Form Side */}
           <div className="order-1 lg:order-1 lg:col-span-6 bg-[#00161A] p-6 md:p-8 rounded-3xl border border-cream/20 space-y-6">
             <h3 className="display text-2xl text-cream border-b border-cream/10 pb-3">
@@ -413,6 +424,7 @@ export default function Home() {
                 ref={cardRef}
                 data={passData}
                 onTransform={setTransform}
+                shineToken={shineToken}
               />
 
               <p className="mt-3 text-center text-xs text-cream/50">
