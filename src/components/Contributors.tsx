@@ -11,9 +11,8 @@ import { useState } from "react";
 
 type Person = { handle: string; name: string };
 
-const AUTHOR: Person = { handle: "Karannnnn614", name: "Karan Mundre" };
-
-const CONTRIBUTORS: Person[] = [
+const TEAM: Person[] = [
+  { handle: "Karannnnn614", name: "Karan Mundre" },
   { handle: "VaibHUB17", name: "Vaibhav Shivhare" },
   { handle: "Ankur2606", name: "Bhavya Pratap Singh Tomar" },
 ];
@@ -47,12 +46,14 @@ function Avatar({ person }: { person: Person }) {
 
       {/* eslint-disable-next-line @next/next/no-img-element -- avatars are remote and unoptimised by design */}
       <img
-        src={`https://github.com/${person.handle}.png?size=160`}
+        src={`https://github.com/${person.handle}.png?size=120`}
         alt={person.name}
-        width={56}
-        height={56}
+        width={32}
+        height={32}
         loading="lazy"
-        className="h-14 w-14 rounded-full border-2 border-cream/20 object-cover transition duration-200 group-hover:-translate-y-1 group-hover:border-orange group-focus-visible:-translate-y-1 group-focus-visible:border-orange"
+        // -ml-2 on all but the first overlaps them into a stack; hover lifts
+        // the avatar clear of its neighbours.
+        className="h-8 w-8 rounded-full border-2 border-ink bg-ink object-cover ring-1 ring-cream/20 transition duration-200 group-hover:-translate-y-1 group-hover:ring-orange group-focus-visible:-translate-y-1 group-focus-visible:ring-orange"
       />
     </a>
   );
@@ -60,26 +61,15 @@ function Avatar({ person }: { person: Person }) {
 
 export default function Contributors() {
   return (
-    <div className="flex flex-col items-center gap-6 sm:flex-row sm:justify-center sm:gap-10">
-      <div className="flex flex-col items-center gap-3">
-        <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-cream/40">
-          Built by
-        </span>
-        <Avatar person={AUTHOR} />
-      </div>
-
-      <div className="hidden h-16 w-px bg-cream/10 sm:block" />
-
-      <div className="flex flex-col items-center gap-3">
-        <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-cream/40">
-          Contributors
-        </span>
-        <div className="flex items-center gap-3">
-          {CONTRIBUTORS.map((person) => (
-            <Avatar key={person.handle} person={person} />
-          ))}
-        </div>
-      </div>
-    </div>
+    <span className="inline-flex items-center gap-2 align-middle">
+      <span className="text-cream/40">Built by</span>
+      <span className="flex items-center">
+        {TEAM.map((person, index) => (
+          <span key={person.handle} className={index > 0 ? "-ml-2" : ""}>
+            <Avatar person={person} />
+          </span>
+        ))}
+      </span>
+    </span>
   );
 }
