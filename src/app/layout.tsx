@@ -43,6 +43,10 @@ export const metadata: Metadata = {
     description:
       "Mint your Hacker House Goa 2026 Builder Pass. Build. Ship. Ascend.",
     type: "website",
+    url: "/",
+    siteName: "Hacker House Goa 2026",
+    // og:image comes from src/app/opengraph-image.jpg (file convention);
+    // per-pass routes override it with their own generateMetadata.
   },
   twitter: { card: "summary_large_image" },
 };
