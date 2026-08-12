@@ -29,58 +29,47 @@
 The application is built with a **Client-First Architecture** ensuring complete privacy. All image manipulation, orientation correction, canvas layout calculations, and rasterization take place locally in the user's browser. Server routes exist purely for dynamic social OpenGraph previews (`/api/og`) and permalink decoding (`/p`).
 
 ```mermaid
-graph TD
-    subgraph Client ["Client Browser (100% Client-Side Privacy)"]
-        UI["User Interface (Next.js 16 / React 19)"]
-        
-        subgraph PhotoProc ["Photo Intake & Canvas Pipeline"]
-            Upload["User Photo (JPG / PNG / HEIC)"]
-            HEIC["heic2any (Lazy Dynamic Import)"]
-            EXIF["exifOrientation (Canvas Normalization)"]
-            Slot["PhotoSlot (Pinch / Zoom / Drag)"]
-        end
-        
-        subgraph Logic ["Deterministic Logic & State"]
-            Val["validation.ts (Input Guardrails)"]
-            Hash["builderClass.ts (FNV-1a Pass ID)"]
-            QR["qr.ts (Dynamic QR Generator)"]
-            State["passLink.ts (Compact URL Payload)"]
-        end
+flowchart TD
+    %% Styling Classes
+    classDef client fill:#1e293b,stroke:#3b82f6,stroke-width:1.5px,color:#f8fafc
+    classDef engine fill:#1e1b4b,stroke:#818cf8,stroke-width:1.5px,color:#f8fafc
+    classDef render fill:#064e3b,stroke:#34d399,stroke-width:1.5px,color:#f8fafc
+    classDef edge fill:#4c1d95,stroke:#c084fc,stroke-width:1.5px,color:#f8fafc
 
-        subgraph RenderEngine ["High-DPI Rasterizer"]
-            Canvas["PassCard Canvas (Auto-Fit Typography)"]
-            PlateJSON["plate.json (Card Bounds & Coordinates)"]
-            Export["render.ts (html-to-image)"]
-            PNG["Download 2400x3000 PNG"]
-        end
+    %% STAGE 1: Client Photo Processing
+    subgraph S1 ["1. Client Photo Intake (100% Client-Side Privacy)"]
+        direction LR
+        Photo["📷 User Photo<br/>(JPG, PNG, HEIC)"]:::client --> HEIC["🔄 HEIC Conversion<br/>& EXIF Auto-Rotate"]:::client
+        HEIC --> Crop["✂️ Interactive Crop<br/>(Zoom, Pan, Drag)"]:::client
     end
 
-    subgraph Edge ["Next.js Edge & Social Layer"]
-        OGRoute["/api/og Route (@vercel/og / Satori)"]
-        Permalink["/p Permalinks & Detail Routes"]
-        XShare["X / Twitter Intent (#FrameInGoa)"]
+    %% STAGE 2: Deterministic Data Engine
+    subgraph S2 ["2. Deterministic Data Engine"]
+        direction LR
+        Form["✍️ Builder Profile Form<br/>(Name, Handle, Team)"]:::engine --> Val["🛡️ Input Validation<br/>& Character Guardrails"]:::engine
+        Val --> Hash["🆔 Builder ID Generator<br/>(HHG26-INITIALS-HASH)"]:::engine
+        Hash --> QR["📲 QR Code Generator<br/>(Encodes Pass Permalink)"]:::engine
     end
 
-    Upload --> HEIC
-    Upload --> EXIF
-    HEIC --> EXIF
-    EXIF --> Slot
-    Slot --> Canvas
-    
-    UI --> Val
-    Val --> Hash
-    Hash --> QR
-    Hash --> State
-    
-    State --> Permalink
-    PlateJSON --> Canvas
-    QR --> Canvas
-    Canvas --> Export
-    Export --> PNG
-    
-    State --> OGRoute
-    OGRoute --> XShare
-    PNG --> XShare
+    %% STAGE 3: Canvas Layout & HD Export
+    subgraph S3 ["3. Canvas Composite & High-DPI Export"]
+        direction LR
+        Plate["🎨 Artwork Plate<br/>(plate.json Geometry)"]:::render --> Composite["🖼️ Badge Composition<br/>(Auto-Scaling Typography)"]:::render
+        Crop --> Composite
+        Val --> Composite
+        QR --> Composite
+        Composite --> Raster["⚡ html-to-image Rasterizer<br/>(2× Scale Canvas)"]:::render
+        Raster --> Download["💾 2400×3000 PNG Export"]:::render
+    end
+
+    %% STAGE 4: Edge Previews & Social Sharing
+    subgraph S4 ["4. Edge Previews & Social Sharing"]
+        direction LR
+        Hash --> URL["🔗 State Encoded URL<br/>(/p Pass Permalinks)"]:::edge
+        URL --> OG["🖼️ Dynamic OG Preview<br/>(/api/og Satori Edge Engine)"]:::edge
+        Download --> Share["🚀 Share to X / Twitter<br/>(#FrameInGoa Caption)"]:::edge
+        OG --> Share
+    end
 ```
 
 ---
