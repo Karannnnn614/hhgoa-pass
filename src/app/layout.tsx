@@ -26,6 +26,15 @@ const robotoCondensed = Roboto_Condensed({
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl()),
+  icons: {
+    icon: [
+      { url: "/Favicons/favicon.ico" },
+      { url: "/Favicons/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+      { url: "/Favicons/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+    ],
+    apple: "/Favicons/apple-touch-icon.png",
+  },
+  manifest: "/site.webmanifest",
   title: "Builder Pass — Hacker House Goa 2026",
   description:
     "Mint your Hacker House Goa 2026 Builder Pass. Upload a photo, get a shareable badge in seconds. Build. Ship. Ascend.",
