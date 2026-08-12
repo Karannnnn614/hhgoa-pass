@@ -10,10 +10,11 @@ import type { Transform } from "./PhotoSlot";
  */
 const ScaledCard = forwardRef<
   HTMLDivElement,
-  { data: PassData; onTransform: (t: Transform) => void }
->(function ScaledCard({ data, onTransform }, ref) {
+  { data: PassData; onTransform: (t: Transform) => void; shineToken?: number }
+>(function ScaledCard({ data, onTransform, shineToken = 0 }, ref) {
   const box = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(0);
+  const [shining, setShining] = useState(false);
 
   useEffect(() => {
     const el = box.current;
@@ -25,12 +26,24 @@ const ScaledCard = forwardRef<
     return () => ro.disconnect();
   }, []);
 
+  useEffect(() => {
+    setShining(shineToken > 0);
+  }, [shineToken]);
+
   return (
     <div
       ref={box}
-      className="card-in sheen relative overflow-hidden rounded-[28px] shadow-2xl shadow-black/60"
+      className="card-in relative overflow-hidden rounded-[28px] shadow-2xl shadow-black/60"
       style={{ aspectRatio: `${CARD_W} / ${CARD_H}` }}
     >
+      {shining && (
+        <div
+          key={shineToken}
+          className="shine-overlay"
+          onAnimationEnd={() => setShining(false)}
+          aria-hidden
+        />
+      )}
       <div
         style={{
           position: "absolute",
