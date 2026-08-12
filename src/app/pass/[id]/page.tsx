@@ -17,13 +17,13 @@ export default function LegacyPublicPassPage({ params, searchParams }: PageProps
 
   return (
     <PublicPassView
-      passId={id || "HH26-BLD-1047"}
+      passId={id || "HH26-XXX-XXXX"}
       fields={{
-        firstName: getParam(query.fn) || "VAIBHAV",
-        lastName: getParam(query.ln) || "SHIVHARE",
-        profileTitle: getParam(query.t) || "Builder • Software Engineer • Rust",
-        teamName: getParam(query.tm) || "LEVIATHON",
-        xUsername: getParam(query.x) || "sukuna1709",
+        firstName: getParam(query.fn) || "",
+        lastName: getParam(query.ln) || "",
+        profileTitle: getParam(query.t) || "Software Engineer",
+        teamName: getParam(query.tm) || "",
+        xUsername: getParam(query.x) || "",
       }}
     />
   );

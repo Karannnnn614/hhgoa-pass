@@ -26,11 +26,11 @@ export default function Home() {
   const [errorMsg, setErrorMsg] = useState("");
 
   const [form, setForm] = useState({
-    firstName: "VAIBHAV",
-    lastName: "SHIVHARE",
-    profileTitle: "Builder • Software Engineer • Rust",
-    teamName: "LEVIATHON",
-    xUsername: "sukuna1709",
+    firstName: "",
+    lastName: "",
+    profileTitle: "",
+    teamName: "",
+    xUsername: "",
   });
 
   const [transform, setTransform] = useState({ x: 0, y: 0, zoom: 1 });
@@ -312,6 +312,7 @@ export default function Home() {
               {photo && (
                 <div className="mt-4">
                   <PhotoTools
+                    photo={photo}
                     transform={transform}
                     onChange={setTransform}
                     onReplace={() => fileRef.current?.click()}
@@ -327,7 +328,7 @@ export default function Home() {
               limit={LIMITS.firstName}
               error={errors.firstName}
               onChange={(v) => setForm((f) => ({ ...f, firstName: v }))}
-              placeholder="VAIBHAV"
+              placeholder="YOUR NAME"
             />
 
             {/* Last Name Field */}
@@ -337,7 +338,7 @@ export default function Home() {
               limit={LIMITS.lastName}
               error={errors.lastName}
               onChange={(v) => setForm((f) => ({ ...f, lastName: v }))}
-              placeholder="SHIVHARE"
+              placeholder="LAST NAME"
             />
 
             {/* Profile Title Field */}
@@ -347,7 +348,7 @@ export default function Home() {
               limit={LIMITS.profileTitle}
               error={errors.profileTitle}
               onChange={(v) => setForm((f) => ({ ...f, profileTitle: v }))}
-              placeholder="Builder • Software Engineer • Rust"
+              placeholder="Software Engineer"
             />
 
             {/* Team Name Field */}
@@ -366,7 +367,7 @@ export default function Home() {
               value={form.xUsername}
               error={errors.xUsername}
               onChange={(v) => setForm((f) => ({ ...f, xUsername: v }))}
-              placeholder="sukuna1709"
+              placeholder="username"
               prefix="@"
             />
 
