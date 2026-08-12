@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import Contributors from "@/components/Contributors";
 import HeroBackdrop from "@/components/HeroBackdrop";
 import Intro from "@/components/Intro";
 import PhotoTools from "@/components/PhotoTools";
@@ -455,8 +456,11 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-cream/10 px-6 py-8 text-center text-xs text-cream/40">
-        Hacker House Goa 2026 · Build. Ship. Ascend. · #FrameInGoa
+      <footer className="border-t border-cream/10 px-6 py-10">
+        <Contributors />
+        <p className="mt-8 text-center text-xs text-cream/40">
+          Hacker House Goa 2026 · Build. Ship. Ascend. · #FrameInGoa
+        </p>
       </footer>
     </main>
   );
