@@ -199,6 +199,7 @@ body {
   height: 10px;
   transform: translateX(-50%);
   pointer-events: none;
+  contain: layout paint;
 }
 
 .intro-screen__progress-line {
@@ -207,19 +208,24 @@ body {
   height: 4px;
   border-radius: 999px;
   background: repeating-linear-gradient(90deg, #ff3f68 0 18px, transparent 18px 29px);
-  display: none;
+  display: block;
+  overflow: hidden;
 }
 
-.intro-screen__progress-dot {
+.intro-screen__progress-line::after {
   position: absolute;
-  top: 0;
-  width: 10px;
-  height: 10px;
-  border-radius: 999px;
-  background: #ff9b2f;
-  box-shadow: 0 0 7px 3px rgba(255, 155, 47, 0.75), 0 0 24px 8px rgba(255, 122, 50, 0.38);
-  transform: translateX(-50%);
-  transition: left 120ms linear;
+  inset: -12px auto -12px -30%;
+  width: 18%;
+  content: "";
+  background: linear-gradient(90deg, transparent, rgba(255, 244, 209, 0.95), transparent);
+  filter: blur(5px);
+  animation: intro-line-shine 2.1s ease-in-out infinite;
+}
+
+@keyframes intro-line-shine {
+  0%, 20% { transform: translateX(0); opacity: 0; }
+  36% { opacity: 1; }
+  70%, 100% { transform: translateX(720%); opacity: 0; }
 }
 
 .intro-screen__status {
@@ -235,6 +241,8 @@ body {
   white-space: nowrap;
   text-shadow: 0 0 16px rgba(248, 231, 185, 0.35);
   pointer-events: none;
+  text-align: center;
+  line-height: 1.4;
 }
 
 @media (max-width: 767px) {
@@ -249,26 +257,29 @@ body {
   }
 
   .intro-screen__logo {
-    top: 13%;
+    top: clamp(9rem, 17vh, 13rem);
     left: 50%;
-    width: min(78vw, 380px);
+    width: min(84vw, 380px);
     transform: translate(-50%, -50%);
   }
 
   .intro-screen__progress {
-    bottom: 14%;
-    width: min(68vw, 310px);
+    bottom: clamp(6.5rem, 15vh, 10rem);
+    width: min(72vw, 310px);
   }
 
   .intro-screen__status {
-    bottom: 9.5%;
-    font-size: 0.55rem;
-    letter-spacing: 0.22em;
+    bottom: clamp(3.25rem, 8vh, 5rem);
+    width: min(92vw, 360px);
+    font-size: clamp(0.52rem, 2.2vw, 0.68rem);
+    letter-spacing: clamp(0.12em, 0.8vw, 0.22em);
+    white-space: normal;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .intro-screen__progress-dot {
-    transition: none;
+  .intro-screen__progress-line::after,
+  .intro-screen__logo::after {
+    animation: none;
   }
 }

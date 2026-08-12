@@ -7,7 +7,6 @@ const INTRO_DURATION = 5200;
 export default function Intro() {
   const [show, setShow] = useState<boolean | null>(null);
   const [fading, setFading] = useState(false);
-  const [progress, setProgress] = useState(0);
   const [animationDone, setAnimationDone] = useState(false);
   const [artReady, setArtReady] = useState(false);
   const [logoReady, setLogoReady] = useState(false);
@@ -32,19 +31,11 @@ export default function Intro() {
     }
 
     const showTimer = window.setTimeout(() => setShow(true), 0);
-    const startedAt = performance.now();
-    let frame = 0;
-    const tick = (now: number) => {
-      const value = Math.min((now - startedAt) / INTRO_DURATION, 1);
-      setProgress(value * 100);
-      if (value < 1) frame = window.requestAnimationFrame(tick);
-      else setAnimationDone(true);
-    };
-    frame = window.requestAnimationFrame(tick);
+    const animationTimer = window.setTimeout(() => setAnimationDone(true), INTRO_DURATION);
 
     return () => {
       window.clearTimeout(showTimer);
-      window.cancelAnimationFrame(frame);
+      window.clearTimeout(animationTimer);
     };
   }, []);
 
@@ -92,10 +83,6 @@ export default function Intro() {
 
       <div className="intro-screen__progress" aria-hidden="true">
         <div className="intro-screen__progress-line" />
-        <span
-          className="intro-screen__progress-dot"
-          style={{ left: `${progress}%` }}
-        />
       </div>
 
       <div className="intro-screen__status">
