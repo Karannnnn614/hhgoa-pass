@@ -174,7 +174,16 @@ export async function GET(req: Request) {
                 display: "flex",
               }}
             >
-              {[title, stack].filter(Boolean).join("  ·  ")}
+              {[title, stack]
+                .flatMap((value) => value.split(","))
+                .map((value) => value.trim())
+                .filter(Boolean)
+                .map((value, index) => (
+                  <span key={`${value}-${index}`}>
+                    {index > 0 && <span style={{ color: "#FF3F68", margin: "0 12px" }}>•</span>}
+                    {value}
+                  </span>
+                ))}
             </div>
 
             {/* bottom box: team name + X username */}
@@ -307,7 +316,7 @@ export async function GET(req: Request) {
 
           <div style={{ marginTop: 22, fontSize: 22, fontWeight: 700, display: "flex" }}>
             <span style={{ color: "#F2EDE3" }}>CODE. BUILD.&nbsp;</span>
-            <span style={{ color: "#F2762F" }}>SUNSET.&nbsp;</span>
+            <span style={{ color: "#F2762F" }}>Party.&nbsp;</span>
             <span style={{ color: "#F2EDE3" }}>REPEAT.</span>
           </div>
         </div>

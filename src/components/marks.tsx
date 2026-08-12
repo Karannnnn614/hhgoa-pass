@@ -97,7 +97,7 @@ export function SunsetSeal({ className = "", style }: MarkProps) {
       </text>
       <text fill="#F2EDE3" fontSize="11" fontWeight="700" letterSpacing="3">
         <textPath href="#sealBottom" startOffset="50%" textAnchor="middle">
-          · SUNSET ·
+          · ASCEND ·
         </textPath>
       </text>
       {/* sun over a horizon, centre */}

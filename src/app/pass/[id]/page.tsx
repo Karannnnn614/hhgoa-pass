@@ -21,7 +21,7 @@ export default function LegacyPublicPassPage({ params, searchParams }: PageProps
       fields={{
         firstName: getParam(query.fn) || "",
         lastName: getParam(query.ln) || "",
-        profileTitle: getParam(query.t) || "Software Engineer",
+        profileTitle: getParam(query.t) || "Builder",
         teamName: getParam(query.tm) || "",
         xUsername: getParam(query.x) || "",
       }}

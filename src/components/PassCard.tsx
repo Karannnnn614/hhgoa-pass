@@ -131,8 +131,12 @@ const PassCard = forwardRef<
     NAME_MAX_SIZE,
   );
 
-  const subtitle = [title, stack].filter(Boolean).join("  ·  ");
-  const subSize = subtitle.length > 40 ? 26 : 31;
+  const subtitleItems = [title, stack]
+    .flatMap((value) => value.split(","))
+    .map((value) => value.trim())
+    .filter(Boolean);
+  const subtitleLength = subtitleItems.join(" · ").length;
+  const subSize = subtitleLength > 40 ? 26 : 31;
 
   // Expansion offset to mask out the inner ring gap baked into plate.png
   const OVERLAP_OFFSET = 8;
@@ -215,7 +219,12 @@ const PassCard = forwardRef<
             letterSpacing: "0.02em",
           }}
         >
-          {subtitle}
+          {subtitleItems.map((item, index) => (
+            <span key={`${item}-${index}`}>
+              {index > 0 && <span style={{ color: "#FF3F68", margin: "0 12px" }}>•</span>}
+              {item}
+            </span>
+          ))}
         </div>
       </div>
 

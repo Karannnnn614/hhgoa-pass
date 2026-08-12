@@ -15,7 +15,7 @@ import { LIMITS, validatePassInput, type ValidationErrors } from "@/lib/validati
 import { compactPassLink } from "@/lib/passLink";
 
 const SHARE_TEXT = (firstName: string) =>
-  `Hey, ${firstName} here. A founder in the making just minted a Builder Pass.\n\nSee you at Hacker House Goa 2026. #FrameInGoa\n\nClaim yours:`;
+  `Hey, ${firstName} here. A founder in the making just minted a Builder Pass.\n\nSee you at Hacker House Goa 2026. #FrameInGoa #HHGoa2026 \n\nClaim yours:`;
 
 export default function Home() {
   const [photo, setPhoto] = useState<Photo | null>(null);
@@ -343,12 +343,12 @@ export default function Home() {
 
             {/* Profile Title Field */}
             <FormField
-              label="PROFILE TITLE / ROLE"
+              label="PROFILE TITLE / ROLE / STACKS"
               value={form.profileTitle}
               limit={LIMITS.profileTitle}
               error={errors.profileTitle}
               onChange={(v) => setForm((f) => ({ ...f, profileTitle: v }))}
-              placeholder="Software Engineer"
+              placeholder="Builder, SDE, Fullstack, Rust"
             />
 
             {/* Team Name Field */}
@@ -438,7 +438,7 @@ export default function Home() {
 
       {/* Footer */}
       <footer className="border-t border-cream/10 px-6 py-8 text-center text-xs text-cream/40">
-        Hacker House Goa 2026 · Build. Ship. Sunset. · #FrameInGoa
+        Hacker House Goa 2026 · Build. Ship. Ascend. · #FrameInGoa
       </footer>
     </main>
   );
