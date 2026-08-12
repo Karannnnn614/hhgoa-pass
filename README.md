@@ -2,6 +2,7 @@
 
 > **Mint your official Hacker House Goa 2026 Builder Badge in seconds.**  
 > Upload your photo, customize your builder profile, download a high-res printable PNG badge, and share your pass to X with `#FrameInGoa`.
+> at https://hacker-house-pass.vercel.app/
 
 ## ✨ Features
 
