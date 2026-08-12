@@ -1,87 +1,203 @@
-# HH Goa 2026 — Builder Pass Generator
+# 🌴 HH Goa 2026 — Builder Pass Generator
 
-Upload a photo → get a branded Hacker House Goa 2026 builder badge → download the PNG → share to X with `#FrameInGoa`.
+> **Mint your official Hacker House Goa 2026 Builder Badge in seconds.**  
+> Upload your photo, customize your builder profile, download a high-res printable PNG badge, and share your pass to X with `#FrameInGoa`.
 
-No login. No signup gate. **The photo never leaves the browser** — all image
-processing and rasterising is client-side.
+## ✨ Features
 
-## Run it
+- 🔒 **100% Client-Side Privacy**: Photos and personal details never leave your browser. All image processing, EXIF normalization, and badge rendering occur locally on client-side canvases.
+- 📸 **Smart Photo Intake & Crop Tooling**:
+  - Full support for `JPG`, `PNG`, and `HEIC` (iPhone live photo format) images.
+  - Interactive crop adjustment with zoom, drag, pan, scale, and offset controls.
+  - Automatic EXIF orientation parsing to eliminate sideways iPhone uploads.
+  - On-demand dynamic loading of `heic2any` to keep initial bundle size minimal.
+- 🎯 **Auto-Scaling Canvas Typography**: Real-time canvas measurement auto-scales names and details to fit seamlessly without text overflowing the card artwork bounds.
+- 🆔 **Deterministic Builder ID**: Generates a unique, reproducible Pass ID (`HHG26-<INITIALS>-<HASH>`) computed via FNV-1a hashing of the builder's name and X handle.
+- 📲 **Real-Time Dynamic QR Code**: Embeds a live QR code onto the badge encoding the pass's permalink (`/p?...`), verified with automated decoder validation.
+- 🖼️ **Ultra-HD High-Resolution Export**: Exports crisp **2400×3000px PNG badges** (2× Retina scale of the 1200×1500px layout canvas) using `html-to-image`.
+- 🌐 **Dynamic OpenGraph Link Previews**: Serves custom edge-rendered social preview cards via `/api/og` powered by `@vercel/og` (Satori) and compact URL state decoding.
+- ⚡ **Performance & UX First**:
+  - Smooth desktop hero backdrop and video intro modal.
+  - Adaptive media loading (videos excluded on mobile connections to conserve data).
+  - Built-in form validation with character limits and instant error feedback.
+  - One-click X (Twitter) intent sharing pre-filled with `#FrameInGoa` caption.
 
-```bash
-npm install
-npm run dev      # http://localhost:3000
+---
+
+## 🏗️ System Architecture
+
+The application is built with a **Client-First Architecture** ensuring complete privacy. All image manipulation, orientation correction, canvas layout calculations, and rasterization take place locally in the user's browser. Server routes exist purely for dynamic social OpenGraph previews (`/api/og`) and permalink decoding (`/p`).
+
+```mermaid
+flowchart TD
+    %% Styling Classes
+    classDef client fill:#1e293b,stroke:#3b82f6,stroke-width:1.5px,color:#f8fafc
+    classDef engine fill:#1e1b4b,stroke:#818cf8,stroke-width:1.5px,color:#f8fafc
+    classDef render fill:#064e3b,stroke:#34d399,stroke-width:1.5px,color:#f8fafc
+    classDef edge fill:#4c1d95,stroke:#c084fc,stroke-width:1.5px,color:#f8fafc
+
+    %% STAGE 1: Client Photo Processing
+    subgraph S1 ["1. Client Photo Intake (100% Client-Side Privacy)"]
+        direction LR
+        Photo["📷 User Photo<br/>(JPG, PNG, HEIC)"]:::client --> HEIC["🔄 HEIC Conversion<br/>& EXIF Auto-Rotate"]:::client
+        HEIC --> Crop["✂️ Interactive Crop<br/>(Zoom, Pan, Drag)"]:::client
+    end
+
+    %% STAGE 2: Deterministic Data Engine
+    subgraph S2 ["2. Deterministic Data Engine"]
+        direction LR
+        Form["✍️ Builder Profile Form<br/>(Name, Handle, Team)"]:::engine --> Val["🛡️ Input Validation<br/>& Character Guardrails"]:::engine
+        Val --> Hash["🆔 Builder ID Generator<br/>(HHG26-INITIALS-HASH)"]:::engine
+        Hash --> QR["📲 QR Code Generator<br/>(Encodes Pass Permalink)"]:::engine
+    end
+
+    %% STAGE 3: Canvas Layout & HD Export
+    subgraph S3 ["3. Canvas Composite & High-DPI Export"]
+        direction LR
+        Plate["🎨 Artwork Plate<br/>(plate.json Geometry)"]:::render --> Composite["🖼️ Badge Composition<br/>(Auto-Scaling Typography)"]:::render
+        Crop --> Composite
+        Val --> Composite
+        QR --> Composite
+        Composite --> Raster["⚡ html-to-image Rasterizer<br/>(2× Scale Canvas)"]:::render
+        Raster --> Download["💾 2400×3000 PNG Export"]:::render
+    end
+
+    %% STAGE 4: Edge Previews & Social Sharing
+    subgraph S4 ["4. Edge Previews & Social Sharing"]
+        direction LR
+        Hash --> URL["🔗 State Encoded URL<br/>(/p Pass Permalinks)"]:::edge
+        URL --> OG["🖼️ Dynamic OG Preview<br/>(/api/og Satori Edge Engine)"]:::edge
+        Download --> Share["🚀 Share to X / Twitter<br/>(#FrameInGoa Caption)"]:::edge
+        OG --> Share
+    end
 ```
 
-## Deploy (Vercel)
+---
+
+## 🛠 Tech Stack
+
+| Layer | Tech / Tool | Description |
+|---|---|---|
+| **Framework** | [Next.js 16](https://nextjs.org/) | App Router, Server Components & Edge Routes |
+| **UI Library** | [React 19](https://react.dev/) | Client state, dynamic canvas hooks, layout components |
+| **Styling** | [Tailwind CSS v4](https://tailwindcss.com/) | Modern utility-first CSS with dark theme tokens |
+| **Image Processing** | `heic2any`, dynamic canvas APIs | Client-side format conversion & EXIF parsing |
+| **Badge Rendering** | `html-to-image` | High-DPI DOM-to-PNG rasterization |
+| **QR Code** | `qrcode` & `jsqr` | Deterministic URL encoding and validation |
+| **Social / OG** | `@vercel/og` (Satori) | Dynamic OpenGraph image edge function |
+| **Language** | [TypeScript 5](https://www.typescriptlang.org/) | Strict static typing across components & utilities |
+
+---
+
+## 📂 Project Structure
+
+```
+hhgoa-pass/
+├── public/                  # Static assets (plate PNGs, video, logos)
+├── scripts/
+│   └── build-plate.mjs      # Design artwork processing & coordinate extractor
+├── src/
+│   ├── app/
+│   │   ├── api/og/          # Dynamic OpenGraph image generation route
+│   │   ├── p/               # Pass permalink viewer & detail page
+│   │   ├── globals.css      # Design tokens & animation styles
+│   │   ├── layout.tsx       # Root layout & font metadata
+│   │   └── page.tsx         # Main interactive builder pass generator page
+│   ├── components/
+│   │   ├── CoconutIsland.tsx# Easter egg dynamic canvas animation
+│   │   ├── HeroBackdrop.tsx # Interactive desktop video backdrop
+│   │   ├── Intro.tsx        # Motion intro splash overlay
+│   │   ├── PassCard.tsx     # Core badge component with dynamic text placement
+│   │   ├── PhotoSlot.tsx    # Interactive photo viewport & crop container
+│   │   ├── PhotoTools.tsx   # Zoom & pan adjustment controls
+│   │   ├── ScaledCard.tsx   # Responsive badge container wrapper
+│   │   └── marks.tsx        # Vector icons and SVG branding assets
+│   └── lib/
+│       ├── builderClass.ts  # Deterministic Pass ID hashing algorithm
+│       ├── passLink.ts      # URL encoding/decoding for shareable permalinks
+│       ├── photo.ts         # Photo intake, HEIC conversion & EXIF handling
+│       ├── plate.json       # Extracted card geometry coordinates
+│       ├── qr.ts            # QR code generation helper
+│       ├── render.ts        # PNG export & download engine
+│       ├── siteUrl.ts       # Absolute URL resolution helper
+│       └── validation.ts    # Character limits & input validation logic
+├── package.json
+└── tsconfig.json
+```
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- **Node.js**: v18.0.0 or higher
+- **npm**: v9.0.0 or higher
+
+### Local Development
+
+1. **Clone the repository and install dependencies**:
+   ```bash
+   git clone https://github.com/Karannnnn614/hhgoa-pass.git
+   cd hhgoa-pass
+   npm install
+   ```
+
+2. **Run the development server**:
+   ```bash
+   npm run dev
+   ```
+
+3. **Open the app**:
+   Navigate to [http://localhost:3000](http://localhost:3000) in your browser.
+
+---
+
+## 🌐 Deployment (Vercel)
+
+Deploy instantly with Vercel CLI:
 
 ```bash
 npx vercel --prod
 ```
 
-Then set one env var so OG tags resolve to absolute URLs:
+### Environment Variables
 
+Configure the primary site URL in your Vercel Project Settings so OpenGraph previews resolve correctly on X / Twitter:
+
+```env
+NEXT_PUBLIC_SITE_URL=https://your-deployment.vercel.app
 ```
-NEXT_PUBLIC_SITE_URL = https://your-deployment.vercel.app
-```
 
-Without it, metadata falls back to `http://localhost:3000` and X will not
-render the link preview.
+> ⚠️ **Note**: Without `NEXT_PUBLIC_SITE_URL`, metadata defaults to `http://localhost:3000`, causing X / Twitter link previews to fall back to default assets.
 
-## How it hits the brief
+---
 
-| Requirement | Where |
-|---|---|
-| JPG / PNG / **HEIC** | `src/lib/photo.ts` — `heic2any` loaded lazily, only when a HEIC actually arrives |
-| Any aspect ratio, off-centre crops | cover-fit + drag / pinch / zoom in `PhotoSlot.tsx`, visible controls in `PhotoTools.tsx` |
-| EXIF orientation | `exifOrientation()` parses the APP1 tag and normalises on canvas, so iPhone photos aren't sideways |
-| Speed | uploads downscaled to 1400px before render; `html-to-image` is dynamically imported after first upload |
-| Real downloadable file | 2400×3000 PNG blob (2× of 1200×1500) via `render.ts` |
-| Share to X | `x.com/intent/tweet` with pre-written caption + `#FrameInGoa` |
-| OG preview | `/api/og` (`next/og`, flexbox-only Satori layout) behind the `/p` permalink |
-| Mobile | phones never fetch the mp4 — the intro and hero video are desktop-only |
+## 🎨 Plate Generation Script
 
-## The card
-
-The card **is** the supplied design. `public/plate.png` is the mockup artwork
-with the sample portrait and sample text removed; the app drops the user's
-photo into the transparent circle and draws live text at the original design's
-positions. Nothing about the artwork is re-drawn or approximated.
-
-Regenerate the plate if the design changes:
+The pass layout uses `public/plate.png` as its foundational badge artwork. If the original design mockup updates, you can re-run the automated geometry extractor:
 
 ```bash
 node scripts/build-plate.mjs
 ```
 
-It re-detects the card bounds, erases the sample content, punches the photo
-hole, and writes `src/lib/plate.json` with the geometry the card reads.
+**What it does:**
+1. Detects card body bounds from the source mockup.
+2. Punches out the photo viewport circle.
+3. Erases placeholder text and crops unnecessary border padding.
+4. Generates `src/lib/plate.json` containing exact pixel offsets for live text and photo placement.
 
-## Notes
+---
 
-- **Name type auto-fits.** The name is measured on a canvas with the real
-  display font and scaled down until it fits, so long names like "Rajesh
-  Kumaraswamy" don't overflow the card. A character count is not enough —
-  "KUMARASWAMY" is much wider than 11 narrow glyphs.
-- **Credential rows are anchored to the plate's icons** (person y=1332,
-  calendar y=1431) and centred with `translateY(-50%)`, so the label/value
-  pairs cannot drift into each other at any font size.
-- **Builder ID** is `HHG26-<initials>-<4 digits>`, e.g. `HHG26-BPS-3731` for
-  Bhavya Pratap Singh. The initials come from the name (up to 3, falling back
-  to `BLD` for single-word names); the digits are an FNV-1a hash of name + X
-  handle. It's deterministic on purpose: the downloaded PNG, the `/p`
-  permalink and its OG preview can never show different IDs for one person.
-- **The QR is real.** It encodes that pass's `/p?...` permalink; verified by
-  decoding it back out of the exported PNG.
-- The landing artwork is a full page comp (it carries its own nav and
-  wordmark), so the hero uses a **cropped scenery strip** of it — otherwise its
-  lettering collides with the live headline. The mp4 plays as the intro.
-- `/api/og` cannot embed the user's photo (it isn't in the URL), so it falls
-  back to a branded initials monogram — never a blank thumbnail.
+## 🧪 Quality & Integrity Checks
 
-## Checks
+- **Deterministic Hash Integrity**: `src/lib/builderClass.ts` includes runtime assertions ensuring pass IDs remain case-insensitive, whitespace-trimmed, and reproducible across sessions.
+- **Layout & Typography Resilience**: Tested against varied name lengths (from single characters to long multi-word names like "Rajesh Kumaraswamy") to verify auto-scaling canvas typography.
+- **QR Code Verification**: QR code payloads are verified by decoding generated PNG outputs with `jsqr` to ensure valid permalink resolution.
 
-`src/lib/builderClass.ts` carries assertions that the hash stays stable and
-case/whitespace-insensitive; they run in dev.
+---
 
-Name/layout regressions were checked across one-word, two-word, long, and
-single-character names, plus the original mockup's data.
+## 📜 License
+
+Created for **Hacker House Goa 2026**. Built with ❤️ for the builder community.
+
