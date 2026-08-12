@@ -1,18 +1,26 @@
 import type { Metadata } from "next";
-import { Archivo, Archivo_Black } from "next/font/google";
+import { Anton, DM_Sans, Roboto_Condensed } from "next/font/google";
 import { siteUrl } from "@/lib/siteUrl";
 import "./globals.css";
 
-const sans = Archivo({
+const sans = DM_Sans({
   variable: "--font-sans",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800", "900"],
+  display: "swap",
+});
+
+const display = Anton({
+  variable: "--font-display",
+  weight: "400",
   subsets: ["latin"],
   display: "swap",
 });
 
-const display = Archivo_Black({
-  variable: "--font-display",
-  weight: "400",
+const robotoCondensed = Roboto_Condensed({
+  variable: "--font-roboto-condensed",
   subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800", "900"],
   display: "swap",
 });
 
@@ -35,9 +43,10 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
-      <body className={`${sans.variable} ${display.variable} antialiased`}>
+      <body className={`${sans.variable} ${display.variable} ${robotoCondensed.variable} antialiased`}>
         {children}
       </body>
     </html>
   );
 }
+

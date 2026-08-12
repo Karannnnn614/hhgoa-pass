@@ -1,17 +1,19 @@
 @import "tailwindcss";
 
 @theme {
-  /* HH Goa 2026 — locked palette */
-  --color-ink: #071613;
-  --color-deep: #0e2620;
-  --color-deep-2: #123329;
-  --color-cream: #f5e9cf;
-  --color-pink: #e8336e;
-  --color-orange: #f5a03c;
+  /* HH Goa 2026 — locked palette matching reference image 1.png */
+  --color-ink: #00161a;
+  --color-deep: #00161a;
+  --color-deep-2: #00161a;
+  --color-cream: #f8e7b9;
+  --color-pink: #ff3f68;
+  --color-orange: #ff7a32;
+  --color-gold: #c88724;
   --color-sand: #cbbb99;
 
   --font-display: var(--font-display), ui-sans-serif, system-ui, sans-serif;
   --font-sans: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-roboto-condensed: var(--font-roboto-condensed), "Roboto Condensed", sans-serif;
 }
 
 html,
@@ -32,6 +34,23 @@ body {
   text-transform: uppercase;
   letter-spacing: -0.02em;
   line-height: 0.88;
+}
+
+.hacker-house-artifact {
+  position: relative;
+  width: clamp(19rem, 43vw, 48rem);
+  aspect-ratio: 2.5 / 1;
+  overflow: hidden;
+  margin: 0;
+}
+
+.hacker-house-artifact img {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 100%;
+  height: auto;
+  transform: translateY(-50%);
 }
 
 /* Reveal used when the card lands */
@@ -57,17 +76,18 @@ body {
     transform: translateX(320%) skewX(-18deg);
   }
 }
-.sheen::after {
+.shine-overlay {
   content: "";
   position: absolute;
   inset: 0;
+  z-index: 2;
   background: linear-gradient(
     90deg,
     transparent,
     rgba(245, 233, 207, 0.16),
     transparent
   );
-  animation: sheen 1.1s ease-out 0.45s both;
+  animation: sheen 1.1s ease-out both;
   pointer-events: none;
 }
 
@@ -88,7 +108,7 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .card-in,
   .rise,
-  .sheen::after {
+  .shine-overlay {
     animation: none !important;
   }
 }

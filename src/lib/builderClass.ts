@@ -68,6 +68,12 @@ export function builderId(name: string, handle = ""): string {
   return `HHG26-${initials(name)}-${n}`;
 }
 
+/** Backward-compatible helper for page forms */
+export function generatePassId(firstName: string, lastName = "", xUsername = ""): string {
+  const name = [firstName, lastName].filter(Boolean).join(" ");
+  return builderId(name, xUsername);
+}
+
 if (process.env.NODE_ENV !== "production" && typeof window === "undefined") {
   // determinism check: same input must never drift
   console.assert(
