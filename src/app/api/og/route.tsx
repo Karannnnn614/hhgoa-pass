@@ -29,7 +29,7 @@ export async function GET(req: Request) {
   const stack = (searchParams.get("s") || "").slice(0, 34);
   const handle = (searchParams.get("h") || "").slice(0, 20).replace(/^@/, "");
   const id = builderId(name, handle);
-  const storedPhoto = getPhoto(searchParams.get("p") || "");
+  const storedPhoto = await getPhoto(searchParams.get("p") || "").catch(() => null);
 
   const parts = name.trim().split(/\s+/).filter(Boolean);
   const line1 = parts[0] ?? "YOUR";
