@@ -1,9 +1,17 @@
 import { ImageResponse } from "next/og";
 import { builderId } from "@/lib/builderClass";
-import { siteUrl } from "@/lib/siteUrl";
 import plate from "@/lib/plate.json";
 
-export const runtime = "nodejs";
+export const runtime = "edge";
+
+function toBase64(bytes: Uint8Array): string {
+  let binary = "";
+  const chunkSize = 0x8000;
+  for (let index = 0; index < bytes.length; index += chunkSize) {
+    binary += String.fromCharCode(...bytes.subarray(index, index + chunkSize));
+  }
+  return btoa(binary);
+}
 
 /**
  * Link-preview card. Renders the actual badge artwork (public/plate.png) as
@@ -55,10 +63,9 @@ export async function GET(req: Request) {
   // The badge art, inlined so Satori can draw it.
   let plateSrc = "";
   try {
-    const res = await fetch(`${siteUrl()}/plate.png`);
+    const res = await fetch(new URL("/plate.png", req.url));
     if (res.ok) {
-      const buf = Buffer.from(await res.arrayBuffer());
-      plateSrc = `data:image/png;base64,${buf.toString("base64")}`;
+      plateSrc = `data:image/png;base64,${toBase64(new Uint8Array(await res.arrayBuffer()))}`;
     }
   } catch {
     /* fall through — the layout still reads as the event without it */
